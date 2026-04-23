@@ -11,6 +11,7 @@ object Clientes: TClientes
   Font.Name = 'Segoe UI'
   Font.Style = []
   Position = poDesigned
+  OnShow = FormCreate
   TextHeight = 15
   object pnlTopo: TPanel
     Left = 0

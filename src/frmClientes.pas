@@ -25,13 +25,13 @@ type
     qryClientes: TFDQuery;
     dsClientes: TDataSource;
 
-    procedure FormShow(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
     procedure btnBuscarClick(Sender: TObject);
     procedure btnNovoClick(Sender: TObject);
     procedure btnSalvarClick(Sender: TObject);
     procedure btnExcluirClick(Sender: TObject);
   private
-    { Private declarations }
+    procedure CarregarClientes(const AFiltro: string);
   public
     { Public declarations }
   end;
@@ -43,42 +43,54 @@ implementation
 
 {$R *.dfm}
 
-// Carregar Clientes
-procedure TClientes.FormShow(Sender: TObject);
+// Rodar assim que o Form for instanciado
+procedure TClientes.FormCreate(Sender: TObject);
 begin
   qryClientes.Connection := Conexao.Conexao;
+  qryClientes.CachedUpdates := True;
 
-  qryClientes.SQL.Text :=
-    'SELECT ID, DOCUMENTO, RAZAO_SOCIAL, NOME_FANTASIA, CEP, CIDADE, UF FROM CLIENTES ORDER BY RAZAO_SOCIAL';
-
-    qryClientes.Open;
+  CarregarClientes('');
 end;
 
-// Buscar Clientes
-procedure TClientes.btnBuscarClick(Sender: TObject);
+// Método central de busca
+procedure TClientes.CarregarClientes(const AFiltro: string);
 begin
   qryClientes.Close;
 
-  if Trim(edtBusca.Text) = '' then
+  if Trim(AFiltro) = '' then
   begin
     qryClientes.SQL.Text :=
-    'SELECT ID, DOCUMENTO, RAZAO_SOCIAL, NOME_FANTASIA, CEP, CIDADE, UF FROM CLIENTES ORDER BY RAZAO_SOCIAL';
+      'SELECT ID, DOCUMENTO, RAZAO_SOCIAL, NOME_FANTASIA, CEP, CIDADE, UF, CREATED_AT, UPDATED_AT ' +
+      'FROM CLIENTES ' +
+      'ORDER BY RAZAO_SOCIAL';
   end
   else
   begin
     qryClientes.SQL.Text :=
-    'SELECT ID, DOCUMENTO, RAZAO_SOCIAL, NOME_FANTASIA, CEP, CIDADE, UF FROM CLIENTES ' +
-    'WHERE RAZAO_SOCIAL CONTAINING :pBusca OR DOCUMENTO CONTAINING :pBusca ORDER BY RAZAO_SOCIAL';
+      'SELECT ID, DOCUMENTO, RAZAO_SOCIAL, NOME_FANTASIA, CEP, CIDADE, UF, CREATED_AT, UPDATED_AT ' +
+      'FROM CLIENTES ' +
+      'WHERE RAZAO_SOCIAL CONTAINING :pBusca ' +
+      '   OR DOCUMENTO    CONTAINING :pBusca ' +
+      'ORDER BY RAZAO_SOCIAL';
 
-    qryClientes.ParamByName('pBusca').AsString := Trim(edtBusca.Text);
+    qryClientes.ParamByName('pBusca').AsString := Trim(AFiltro);
   end;
 
   qryClientes.Open;
 end;
 
+// Buscar Clientes
+procedure TClientes.btnBuscarClick(Sender: TObject);
+begin
+  CarregarClientes(edtBusca.Text);
+end;
+
 // Botao Novo
 procedure TClientes.btnNovoClick(Sender: TObject);
 begin
+  if not qryClientes.Active then
+    CarregarClientes('');
+
   qryClientes.Append;
 end;
 
