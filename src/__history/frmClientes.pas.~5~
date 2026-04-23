@@ -1,0 +1,76 @@
+unit frmClientes;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Data.DB,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
+  Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls,
+  dmConexao;
+
+type
+  TClientes = class(TForm)
+    pnlTopo: TPanel;
+    edtBusca: TEdit;
+    btnBuscar: TButton;
+    pnlRodape: TPanel;
+    btnNovo: TButton;
+    btnSalvar: TButton;
+    btnExcluir: TButton;
+    pnlCentro: TPanel;
+    gridClientes: TDBGrid;
+    qryClientes: TFDQuery;
+    dsClientes: TDataSource;
+
+    procedure FormShow(Sender: TObject);
+    procedure btnBuscarClick(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Clientes: TClientes;
+
+implementation
+
+{$R *.dfm}
+
+// Carregar Clientes
+procedure TClientes.FormShow(Sender: TObject);
+begin
+  qryClientes.Connection := Conexao.Conexao;
+
+  qryClientes.SQL.Text :=
+    'SELECT ID, DOCUMENTO, RAZAO_SOCIAL, NOME_FANTASIA, CEP, CIDADE, UF FROM CLIENTES ORDER BY RAZAO_SOCIAL';
+
+    qryClientes.Open;
+end;
+
+// Buscar Clientes
+procedure TClientes.btnBuscarClick(Sender: TObject);
+begin
+  qryClientes.Close;
+
+  if Trim(edtBusca.Text) = '' then
+  begin
+    qryClientes.SQL.Text :=
+    'SELECT ID, DOCUMENTO, RAZAO_SOCIAL, NOME_FANTASIA, CEP, CIDADE, UF FROM CLIENTES ORDER BY RAZAO_SOCIAL';
+  end
+  else
+  begin
+    qryClientes.SQL.Text :=
+    'SELECT ID, DOCUMENTO, RAZAO_SOCIAL, NOME_FANTASIA, CEP, CIDADE, UF FROM CLIENTES ' +
+    'WHERE RAZAO_SOCIAL CONTAINING :pBusca OR DOCUMENTO CONTAINING :pBusca ORDER BY RAZAO_SOCIAL';
+
+    qryClientes.ParamByName('pBusca').AsString := Trim(edtBusca.Text);
+  end;
+
+  qryClientes.Open;
+end;
+
+end.

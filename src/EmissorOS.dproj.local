@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+  <Transactions>
+    <Transaction>2026/04/21 15:42:35.926,=C:\Users\Kaue\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2026/04/21 15:58:26.917,D:\Projects\EmissorOrdemServico\src\frmPrincipal.pas=C:\Users\Kaue\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2026/04/21 15:58:26.917,D:\Projects\EmissorOrdemServico\src\frmPrincipal.dfm=C:\Users\Kaue\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>2026/04/21 15:58:45.951,D:\Projects\EmissorOrdemServico\src\EmissorOS.dproj=C:\Users\Kaue\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2026/04/21 16:05:47.824,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/04/21 16:06:27.493,D:\Projects\EmissorOrdemServico\src\dmConexao.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/04/21 16:06:27.493,D:\Projects\EmissorOrdemServico\src\dmConexao.dfm=D:\Projects\EmissorOrdemServico\src\Unit1.dfm</Transaction>
+    <Transaction>2026/04/21 16:40:00.709,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/04/21 16:41:31.032,D:\Projects\EmissorOrdemServico\src\frmClientes.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/04/21 16:41:31.032,D:\Projects\EmissorOrdemServico\src\frmClientes.dfm=D:\Projects\EmissorOrdemServico\src\Unit1.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

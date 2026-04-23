@@ -1,0 +1,16 @@
+program EmissorOS;
+
+uses
+  Vcl.Forms,
+  frmPrincipal in 'frmPrincipal.pas' {Principal},
+  dmConexao in 'dmConexao.pas' {Conexao: TDataModule};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TConexao, Conexao);
+  Application.CreateForm(TPrincipal, Principal);
+  Application.Run;
+end.
