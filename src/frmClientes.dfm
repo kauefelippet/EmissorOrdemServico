@@ -3,7 +3,7 @@ object Clientes: TClientes
   Top = 0
   Caption = 'Clientes'
   ClientHeight = 480
-  ClientWidth = 655
+  ClientWidth = 840
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,16 +11,18 @@ object Clientes: TClientes
   Font.Name = 'Segoe UI'
   Font.Style = []
   Position = poDesigned
+  OnCreate = FormCreate
   OnShow = FormCreate
   TextHeight = 15
   object pnlTopo: TPanel
     Left = 0
     Top = 0
-    Width = 655
+    Width = 840
     Height = 45
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitWidth = 655
     object edtBusca: TEdit
       Left = 8
       Top = 10
@@ -28,6 +30,7 @@ object Clientes: TClientes
       Height = 23
       TabOrder = 0
       TextHint = 'Buscar por nome ou documento'
+      OnKeyPress = edtBuscaKeyPress
     end
     object btnBuscar: TButton
       Left = 314
@@ -42,11 +45,12 @@ object Clientes: TClientes
   object pnlRodape: TPanel
     Left = 0
     Top = 435
-    Width = 655
+    Width = 840
     Height = 45
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitWidth = 655
     object btnNovo: TButton
       Left = 8
       Top = 8
@@ -56,14 +60,14 @@ object Clientes: TClientes
       TabOrder = 0
       OnClick = btnNovoClick
     end
-    object btnSalvar: TButton
+    object btnEditar: TButton
       Left = 89
       Top = 8
       Width = 75
       Height = 25
-      Caption = 'Salvar'
+      Caption = 'Editar'
       TabOrder = 1
-      OnClick = btnSalvarClick
+      OnClick = btnEditarClick
     end
     object btnExcluir: TButton
       Left = 170
@@ -78,18 +82,22 @@ object Clientes: TClientes
   object pnlCentro: TPanel
     Left = 0
     Top = 45
-    Width = 655
+    Width = 840
     Height = 390
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
+    ExplicitWidth = 655
     object gridClientes: TDBGrid
       Left = 0
       Top = 0
-      Width = 655
+      Width = 840
       Height = 390
       Align = alClient
+      BorderStyle = bsNone
       DataSource = dsClientes
+      Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+      ReadOnly = True
       TabOrder = 0
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText

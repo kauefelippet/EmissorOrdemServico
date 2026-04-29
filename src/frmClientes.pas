@@ -9,7 +9,7 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet, FireDAC.Comp.Client,
   Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls,
-  dmConexao;
+  dmConexao, frmCadCliente;
 
 type
   TClientes = class(TForm)
@@ -18,7 +18,7 @@ type
     btnBuscar: TButton;
     pnlRodape: TPanel;
     btnNovo: TButton;
-    btnSalvar: TButton;
+    btnEditar: TButton;
     btnExcluir: TButton;
     pnlCentro: TPanel;
     gridClientes: TDBGrid;
@@ -28,10 +28,12 @@ type
     procedure FormCreate(Sender: TObject);
     procedure btnBuscarClick(Sender: TObject);
     procedure btnNovoClick(Sender: TObject);
-    procedure btnSalvarClick(Sender: TObject);
+    procedure btnEditarClick(Sender: TObject);
     procedure btnExcluirClick(Sender: TObject);
+    procedure edtBuscaKeyPress(Sender: TObject; var Key: Char);
   private
     procedure CarregarClientes(const AFiltro: string);
+    procedure ConfigurarColunas;
   public
     { Public declarations }
   end;
@@ -77,6 +79,48 @@ begin
   end;
 
   qryClientes.Open;
+  ConfigurarColunas;
+end;
+
+// Adaptar colunas do grid
+procedure TClientes.ConfigurarColunas;
+begin
+  gridClientes.Columns.Clear;
+
+  with gridClientes.Columns.Add do
+  begin
+    FieldName      := 'DOCUMENTO';
+    Title.Caption  := 'CPF / CNPJ';
+    Width          := 130;
+  end;
+
+  with gridClientes.Columns.Add do
+  begin
+    FieldName      := 'RAZAO_SOCIAL';
+    Title.Caption  := 'Razão Social';
+    Width          := 280;
+  end;
+
+  with gridClientes.Columns.Add do
+  begin
+    FieldName      := 'NOME_FANTASIA';
+    Title.Caption  := 'Nome Fantasia';
+    Width          := 200;
+  end;
+
+  with gridClientes.Columns.Add do
+  begin
+    FieldName      := 'CIDADE';
+    Title.Caption  := 'Cidade';
+    Width          := 150;
+  end;
+
+  with gridClientes.Columns.Add do
+  begin
+    FieldName      := 'UF';
+    Title.Caption  := 'UF';
+    Width          := 45;
+  end;
 end;
 
 // Buscar Clientes
@@ -85,47 +129,61 @@ begin
   CarregarClientes(edtBusca.Text);
 end;
 
-// Botao Novo
-procedure TClientes.btnNovoClick(Sender: TObject);
+// Enter no campo de busca
+procedure TClientes.edtBuscaKeyPress(Sender: TObject; var Key: Char);
 begin
-  if not qryClientes.Active then
-    CarregarClientes('');
-
-  qryClientes.Append;
+  if Key = #13 then
+  begin
+    Key := #0;
+    CarregarClientes(edtBusca.Text);
+  end;
 end;
 
-// Botao Salvar
-procedure TClientes.btnSalvarClick(Sender: TObject);
+// Botao Novo
+procedure TClientes.btnNovoClick(Sender: TObject);
+var
+  frmCad: TCadCliente;
 begin
-  if not (qryClientes.State in [dsInsert, dsEdit]) then
+  frmCad := TCadCliente.Create(Self);
+  try
+    frmCad.ClienteID := 0;
+    frmCad.Caption := 'Novo Cliente';
+
+    if frmCad.ShowModal = mrOk then
+      CarregarClientes(edtBusca.Text);
+  finally
+    frmCad.Free;
+  end;
+end;
+
+// Botao Editar
+procedure TClientes.btnEditarClick(Sender: TObject);
+var
+  frmCad:TCadCliente;
+begin
+  if qryClientes.IsEmpty then
   begin
-    ShowMessage('Nenhuma alteração para salvar.');
+    ShowMessage('Selecione um Cliente para editar.');
     Exit;
   end;
 
-  if Trim(qryClientes.FieldByName('DOCUMENTO').AsString) = '' then
-  begin
-    ShowMessage('Informe o Documento.');
-    qryClientes.FieldByName('DOCUMENTO').FocusControl;
-    Exit;
+  frmCad := TCadCliente.Create(Self);
+  try
+    frmCad.ClienteID := qryClientes.FieldByName('ID').AsInteger;
+    frmCad.Caption := 'Edição de Cliente';
+
+    if frmCad.ShowModal = mrOk then
+      CarregarClientes(edtBusca.Text);
+  finally
+    frmCad.Free;
   end;
-
-  if Trim(qryClientes.FieldByName('RAZAO_SOCIAL').AsString) = '' then
-  begin
-    ShowMessage('Informe a Razão Social.');
-    qryClientes.FieldByName('RAZAO_SOCIAL').FocusControl;
-    Exit;
-  end;
-
-  qryClientes.FieldByName('UPDATED_AT').AsDateTime := Now;
-  qryClientes.Post;
-  qryClientes.ApplyUpdates(-1);
-
-  ShowMessage('Cliente salvo com sucesso!');
 end;
 
 // Botao Excluir
 procedure TClientes.btnExcluirClick(Sender: TObject);
+var
+  qry: TFDQuery;
+  sNome: string;
 begin
   if qryClientes.IsEmpty then
   begin
@@ -133,14 +191,30 @@ begin
     Exit;
   end;
 
-  if MessageDlg('Excluir Cliente?', mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+  sNome := qryClientes.FieldByName('RAZAO_SOCIAL').AsString;
+
+  if MessageDlg('Excluir o cliente "' + sNome + '"?'#13#10 +
+                'Esta ação não pode ser desfeita.',
+                mtWarning, [mbYes, mbNo], 0) = mrYes then
   begin
-    qryClientes.Delete;
-    qryClientes.ApplyUpdates(-1);
-    ShowMessage('Cliente excluído.');
+    qry := TFDQuery.Create(nil);
+    try
+      qry.Connection := Conexao.Conexao;
+      qry.SQL.Text := 'DELETE FROM CLIENTES WHERE ID = :pID';
+      qry.ParamByName('pID').AsInteger := qryClientes.FieldByName('ID').AsInteger;
+      try
+        qry.ExecSQL;
+        CarregarClientes(edtBusca.Text);
+        ShowMessage('Cliente excluído com sucesso.');
+      except
+        on E: Exception do
+          ShowMessage('Não foi possível excluir.'#13#10 +
+                      'Verifique se o cliente possui OS vinculada.'#13#10 + E.Message);
+      end;
+    finally
+      qry.Free;
+    end;
   end;
-
 end;
-
 
 end.
