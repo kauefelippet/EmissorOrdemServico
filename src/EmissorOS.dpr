@@ -2,10 +2,18 @@ program EmissorOS;
 
 uses
   Vcl.Forms,
-  frmPrincipal in 'frmPrincipal.pas' {Principal},
-  dmConexao in 'dmConexao.pas' {Conexao: TDataModule},
-  frmClientes in 'frmClientes.pas' {Clientes},
-  frmCadCliente in 'frmCadCliente.pas' {CadCliente};
+  frmPrincipal in 'forms\frmPrincipal.pas' {Principal},
+  dmConexao in 'infra\dmConexao.pas' {Conexao: TDataModule},
+  frmClientes in 'forms\frmClientes.pas' {Clientes},
+  frmCadCliente in 'forms\frmCadCliente.pas' {CadCliente},
+  uClienteModel in 'models\uClienteModel.pas',
+  uFormatacao in 'shared\uFormatacao.pas',
+  uValidacoes in 'shared\uValidacoes.pas',
+  uClienteRepository in 'repositories\uClienteRepository.pas',
+  uClienteService in 'services\uClienteService.pas',
+  uEnderecoModel in 'models\uEnderecoModel.pas',
+  uEnderecoService in 'services\uEnderecoService.pas',
+  uNotificacao in 'shared\uNotificacao.pas';
 
 {$R *.res}
 

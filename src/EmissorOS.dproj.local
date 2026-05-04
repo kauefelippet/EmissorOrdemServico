@@ -2,8 +2,8 @@
 <BorlandProject>
 	<Transactions>
     <Transaction>2026/04/21 15:42:35.000.926,=C:\Users\Kaue\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>2026/04/21 15:58:26.000.917,D:\Projects\EmissorOrdemServico\src\frmPrincipal.pas=C:\Users\Kaue\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
     <Transaction>2026/04/21 15:58:26.000.917,D:\Projects\EmissorOrdemServico\src\frmPrincipal.dfm=C:\Users\Kaue\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>2026/04/21 15:58:26.000.917,D:\Projects\EmissorOrdemServico\src\frmPrincipal.pas=C:\Users\Kaue\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
     <Transaction>2026/04/21 15:58:45.000.951,D:\Projects\EmissorOrdemServico\src\EmissorOS.dproj=C:\Users\Kaue\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
     <Transaction>2026/04/21 16:05:47.000.824,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
     <Transaction>2026/04/21 16:06:27.000.493,D:\Projects\EmissorOrdemServico\src\dmConexao.dfm=D:\Projects\EmissorOrdemServico\src\Unit1.dfm</Transaction>
@@ -11,17 +11,48 @@
     <Transaction>2026/04/21 16:40:00.000.709,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
     <Transaction>2026/04/21 16:41:31.000.032,D:\Projects\EmissorOrdemServico\src\frmClientes.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
     <Transaction>2026/04/21 16:41:31.000.032,D:\Projects\EmissorOrdemServico\src\frmClientes.dfm=D:\Projects\EmissorOrdemServico\src\Unit1.dfm</Transaction>
-    <Transaction>2026/04/28 21:35:58.357,=D:\Projects\EmissorOrdemServico\src\Unit2.pas</Transaction>
-    <Transaction>2026/04/28 21:36:28.586,D:\Projects\EmissorOrdemServico\src\frmCadCliente.dfm=D:\Projects\EmissorOrdemServico\src\Unit2.dfm</Transaction>
-    <Transaction>2026/04/28 21:36:28.586,D:\Projects\EmissorOrdemServico\src\frmCadCliente.pas=D:\Projects\EmissorOrdemServico\src\Unit2.pas</Transaction>
-  </Transactions>  <ProjectSortOrder AutoSort="0" SortType="0">
-    <File Path="dmConexao.pas"/>
-    <File Path="dmConexao.dfm"/>
-    <File Path="frmCadCliente.pas"/>
-    <File Path="frmCadCliente.dfm"/>
-    <File Path="frmClientes.pas"/>
-    <File Path="frmClientes.dfm"/>
-    <File Path="frmPrincipal.pas"/>
-    <File Path="frmPrincipal.dfm"/>
+    <Transaction>2026/04/28 21:35:58.000.357,=D:\Projects\EmissorOrdemServico\src\Unit2.pas</Transaction>
+    <Transaction>2026/04/28 21:36:28.000.586,D:\Projects\EmissorOrdemServico\src\frmCadCliente.pas=D:\Projects\EmissorOrdemServico\src\Unit2.pas</Transaction>
+    <Transaction>2026/04/28 21:36:28.000.586,D:\Projects\EmissorOrdemServico\src\frmCadCliente.dfm=D:\Projects\EmissorOrdemServico\src\Unit2.dfm</Transaction>
+    <Transaction>2026/05/02 17:21:36.000.544,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/02 17:21:59.000.912,D:\Projects\EmissorOrdemServico\src\models\uClienteModel.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/02 17:23:22.000.366,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/02 17:23:33.000.236,D:\Projects\EmissorOrdemServico\src\shared\uFormatacao.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/02 17:34:14.000.618,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/02 17:34:26.000.958,D:\Projects\EmissorOrdemServico\src\shared\uValidacoes.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/02 17:45:15.000.681,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/02 17:45:31.000.108,D:\Projects\EmissorOrdemServico\src\repositories\uClienteRepository.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/02 17:58:03.000.856,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/02 17:58:13.000.265,D:\Projects\EmissorOrdemServico\src\services\uClienteService.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/02 18:20:05.000.881,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/02 18:20:12.000.988,D:\Projects\EmissorOrdemServico\src\models\uEnderecoModel.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/02 18:20:49.000.680,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/02 18:21:00.000.782,D:\Projects\EmissorOrdemServico\src\services\uEnderecoService.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/03 22:31:28.893,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/03 22:31:38.299,D:\Projects\EmissorOrdemServico\src\shared\uNotificacao.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+  </Transactions>
+	<ProjectSortOrder AutoSort="0" SortType="0">
+    <File Path="forms"/>
+    <File Path="forms\frmCadCliente.pas"/>
+    <File Path="forms\frmCadCliente.dfm"/>
+    <File Path="forms\frmClientes.pas"/>
+    <File Path="forms\frmClientes.dfm"/>
+    <File Path="forms\frmPrincipal.pas"/>
+    <File Path="forms\frmPrincipal.dfm"/>
+    <File Path="infra"/>
+    <File Path="infra\dmConexao.pas"/>
+    <File Path="infra\dmConexao.dfm"/>
+    <File Path="models"/>
+    <File Path="models\uClienteModel.pas"/>
+    <File Path="models\uEnderecoModel.pas"/>
+    <File Path="repositories"/>
+    <File Path="repositories\uClienteRepository.pas"/>
+    <File Path="services"/>
+    <File Path="services\uClienteService.pas"/>
+    <File Path="services\uEnderecoService.pas"/>
+    <File Path="shared"/>
+    <File Path="shared\uFormatacao.pas"/>
+    <File Path="shared\uValidacoes.pas"/>
+    <File Path="shared\uNotificacao.pas"/>
   </ProjectSortOrder>
 </BorlandProject>

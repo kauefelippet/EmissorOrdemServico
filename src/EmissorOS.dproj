@@ -108,6 +108,9 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <DCC_UnitSearchPath>repositories;models;shared;infra;forms;services;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -125,23 +128,27 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="frmPrincipal.pas">
+        <DCCReference Include="forms\frmPrincipal.pas">
             <Form>Principal</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="dmConexao.pas">
+        <DCCReference Include="infra\dmConexao.pas">
             <Form>Conexao</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
-        <DCCReference Include="frmClientes.pas">
+        <DCCReference Include="forms\frmClientes.pas">
             <Form>Clientes</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="frmCadCliente.pas">
+        <DCCReference Include="forms\frmCadCliente.pas">
             <Form>CadCliente</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="models\uClienteModel.pas"/>
+        <DCCReference Include="shared\uFormatacao.pas"/>
+        <DCCReference Include="shared\uValidacoes.pas"/>
+        <DCCReference Include="repositories\uClienteRepository.pas"/>
+        <DCCReference Include="services\uClienteService.pas"/>
+        <DCCReference Include="models\uEnderecoModel.pas"/>
+        <DCCReference Include="services\uEnderecoService.pas"/>
+        <DCCReference Include="shared\uNotificacao.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

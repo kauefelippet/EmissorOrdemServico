@@ -21,8 +21,7 @@ object CadCliente: TCadCliente
     Align = alTop
     Caption = 'Dados Cadastrais'
     TabOrder = 0
-    ExplicitTop = -6
-    object Label1: TLabel
+    object lblCPFCNPJ: TLabel
       Left = 12
       Top = 24
       Width = 59
@@ -32,10 +31,10 @@ object CadCliente: TCadCliente
     object lblTipoDoc: TLabel
       Left = 200
       Top = 44
-      Width = 120
+      Width = 3
       Height = 15
     end
-    object Label2: TLabel
+    object lblRazaoSocial: TLabel
       Left = 12
       Top = 72
       Width = 65
@@ -44,14 +43,14 @@ object CadCliente: TCadCliente
       Color = clBtnFace
       ParentColor = False
     end
-    object Label3: TLabel
+    object lblNomeFantasia: TLabel
       Left = 12
       Top = 120
       Width = 79
       Height = 15
       Caption = 'Nome Fantasia'
     end
-    object Label4: TLabel
+    object lblIERG: TLabel
       Left = 330
       Top = 120
       Width = 35
@@ -108,46 +107,42 @@ object CadCliente: TCadCliente
     Align = alClient
     Caption = 'Endere'#231'o'
     TabOrder = 1
-    ExplicitLeft = 56
-    ExplicitTop = 176
-    ExplicitWidth = 185
-    ExplicitHeight = 105
-    object Label5: TLabel
+    object lblCEP: TLabel
       Left = 12
       Top = 24
       Width = 21
       Height = 15
       Caption = 'CEP'
     end
-    object Label6: TLabel
+    object lblLogradouro: TLabel
       Left = 12
       Top = 72
       Width = 62
       Height = 15
       Caption = 'Logradouro'
     end
-    object Label7: TLabel
+    object lblNumero: TLabel
       Left = 370
       Top = 72
       Width = 44
       Height = 15
       Caption = 'N'#250'mero'
     end
-    object Label8: TLabel
+    object lblBairro: TLabel
       Left = 12
       Top = 120
       Width = 31
       Height = 15
       Caption = 'Bairro'
     end
-    object Label9: TLabel
+    object lblCidade: TLabel
       Left = 12
       Top = 168
       Width = 37
       Height = 15
       Caption = 'Cidade'
     end
-    object Label10: TLabel
+    object lblUF: TLabel
       Left = 240
       Top = 168
       Width = 14
@@ -218,9 +213,6 @@ object CadCliente: TCadCliente
       Color = clCream
       ParentBackground = False
       TabOrder = 7
-      ExplicitLeft = 192
-      ExplicitTop = 240
-      ExplicitWidth = 185
       object btnSalvar: TButton
         Left = 10
         Top = 8
