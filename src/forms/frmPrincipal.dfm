@@ -10,27 +10,64 @@ object Principal: TPrincipal
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
+  Menu = mnuPrincipal
+  OnCreate = FormCreate
   TextHeight = 15
-  object pnlSuperior: TPanel
+  object pnlStatus: TPanel
     Left = 0
-    Top = 0
+    Top = 400
     Width = 624
     Height = 41
-    Align = alTop
-    BevelOuter = bvNone
+    Align = alBottom
     TabOrder = 0
-    ExplicitLeft = 248
-    ExplicitTop = 48
-    ExplicitWidth = 185
-    object btnClientes: TButton
-      Left = 0
-      Top = 0
-      Width = 75
-      Height = 41
-      Hint = 'Acessar e gerenciar cadastros de Clientes'
-      Caption = 'Clientes'
-      TabOrder = 0
-      OnClick = btnClientesClick
+    object lblUsuario: TLabel
+      Left = 544
+      Top = 26
+      Width = 53
+      Height = 15
+      Caption = 'lblUsuario'
+    end
+    object lblStatus: TLabel
+      Left = 456
+      Top = 16
+      Width = 45
+      Height = 15
+      Caption = 'lblStatus'
+    end
+  end
+  object mnuPrincipal: TMainMenu
+    object mnuCadastros: TMenuItem
+      Caption = 'Cadastros'
+      object mnuCadClientes: TMenuItem
+        Caption = 'Clientes'
+        OnClick = mnuCadClientesClick
+      end
+      object mnuCadFrota: TMenuItem
+        Caption = 'Frota'
+        OnClick = mnuCadFrotaClick
+      end
+      object mnuCadRotas: TMenuItem
+        Caption = 'Rotas'
+        OnClick = mnuCadRotasClick
+      end
+    end
+    object mnuTransporte: TMenuItem
+      Caption = 'Transporte'
+      object mnuMovOS: TMenuItem
+        Caption = 'Emiss'#227'o de OS'
+        OnClick = mnuCadRotasClick
+      end
+    end
+    object mnuRelatorios: TMenuItem
+      Caption = 'Relat'#243'rios'
+      object mnuRelOSPeriodo: TMenuItem
+        Caption = 'OS por Per'#237'odo'
+        OnClick = mnuRelOSPeriodoClick
+      end
+      object mnuRelOSCliente: TMenuItem
+        Caption = 'OS por Cliente'
+        OnClick = mnuRelOSClienteClick
+      end
     end
   end
 end

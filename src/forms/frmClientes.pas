@@ -19,13 +19,13 @@ type
     pnlRodape: TPanel;
     pnlCentro: TPanel;
     edtBusca: TEdit;
-    gridClientes: TDBGrid;
     qryClientes: TFDQuery;
     dsClientes: TDataSource;
     btnNovo: TButton;
     btnEditar: TButton;
     btnExcluir: TButton;
     tmrBusca: TTimer;
+    gridClientes: TDBGrid;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);

@@ -20,9 +20,18 @@ type
 
     // Detecta se CPF ou CNPJ com base na quantidade de digitos. Retorna 'CPF', 'CNPJ' ou ''
     class function TipoDocumento(const ATexto: string): string;
+
+    // Remove hifen e maiuscula para salvar no banco
+    class function FormatarPlaca(const APlaca: string): string;
+
+    // Formata para exibicao na interface
+    class function NormalizarPlaca(const APlaca: string): string;
   end;
 
 implementation
+
+uses
+  System.SysUtils;
 
 class function TFormatacao.ApenasNumeros(const ATexto: string): string;
 var
@@ -79,6 +88,22 @@ begin
   else
     Result := '';
   end;
+end;
+
+class function TFormatacao.NormalizarPlaca(const APlaca: string): string;
+begin
+  Result := StringReplace(APlaca, '-', '', [rfReplaceAll]).ToUpper;
+end;
+
+class function TFormatacao.FormatarPlaca(const APlaca: string): string;
+var
+  P: string;
+begin
+  P := NormalizarPlaca(APlaca);
+  if Length(P) = 7 then
+    Result := Copy(P, 1, 3) + '-' + Copy(P, 4, 4)
+  else
+    Result := APlaca;
 end;
 
 end.

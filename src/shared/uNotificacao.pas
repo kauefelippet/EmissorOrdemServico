@@ -20,6 +20,7 @@ type
     class procedure TimerClose(Sender: TObject);
     class procedure Exibir (AOwner: TForm; const AMensagem: string;
                             ATipo: TTipoNotificacao);
+    class procedure FecharNotificacao(Sender: TObject);
   end;
 
 implementation
@@ -52,6 +53,7 @@ begin
   pnl.Width           := Min(AOwner.ClientWidth - 32, 480);
   pnl.Caption         := '';
   pnl.ParentBackground := False;
+  pnl.OnDblClick := FecharNotificacao;
 
   // Posiciona no canto inferior direito do Form
   pnl.Left := AOwner.ClientWidth  - pnl.Width  - 16;
@@ -70,6 +72,7 @@ begin
   ico.Left       := 12;
   ico.Top        := (pnl.Height - ico.Height) div 2;
   ico.AutoSize   := True;
+  ico.OnDblClick := FecharNotificacao;
 
   // ── Texto da mensagem ─────────────────────────────────────────────────────
   lbl            := TLabel.Create(pnl);
@@ -83,10 +86,11 @@ begin
   lbl.AutoSize   := False;
   lbl.WordWrap   := False;
   lbl.EllipsisPosition := epEndEllipsis;
+  lbl.OnDblClick := FecharNotificacao;
 
   // ── Timer para sumir automaticamente ─────────────────────────────────────
   timer          := TTimer.Create(pnl);
-  timer.Interval := 3000;
+  timer.Interval := 2000;
   timer.OnTimer := TimerClose;
   timer.Enabled := True;
 end;
@@ -98,6 +102,20 @@ begin
     Enabled := False;
     Owner.Free;
   end;
+end;
+
+class procedure TNotificacao.FecharNotificacao(Sender: TObject);
+var
+  pnl: TPanel;
+begin
+  if Sender is TPanel then
+    pnl := TPanel(Sender)
+  else if Sender is TControl then
+    pnl := TPanel(TControl(Sender).Parent)
+  else
+    Exit;
+
+  pnl.Free;
 end;
 
 // ─── Métodos públicos ─────────────────────────────────────────────────────────

@@ -2,8 +2,8 @@
 <BorlandProject>
 	<Transactions>
     <Transaction>2026/04/21 15:42:35.000.926,=C:\Users\Kaue\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>2026/04/21 15:58:26.000.917,D:\Projects\EmissorOrdemServico\src\frmPrincipal.dfm=C:\Users\Kaue\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
     <Transaction>2026/04/21 15:58:26.000.917,D:\Projects\EmissorOrdemServico\src\frmPrincipal.pas=C:\Users\Kaue\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2026/04/21 15:58:26.000.917,D:\Projects\EmissorOrdemServico\src\frmPrincipal.dfm=C:\Users\Kaue\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
     <Transaction>2026/04/21 15:58:45.000.951,D:\Projects\EmissorOrdemServico\src\EmissorOS.dproj=C:\Users\Kaue\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
     <Transaction>2026/04/21 16:05:47.000.824,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
     <Transaction>2026/04/21 16:06:27.000.493,D:\Projects\EmissorOrdemServico\src\dmConexao.dfm=D:\Projects\EmissorOrdemServico\src\Unit1.dfm</Transaction>
@@ -28,8 +28,28 @@
     <Transaction>2026/05/02 18:20:12.000.988,D:\Projects\EmissorOrdemServico\src\models\uEnderecoModel.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
     <Transaction>2026/05/02 18:20:49.000.680,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
     <Transaction>2026/05/02 18:21:00.000.782,D:\Projects\EmissorOrdemServico\src\services\uEnderecoService.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
-    <Transaction>2026/05/03 22:31:28.893,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
-    <Transaction>2026/05/03 22:31:38.299,D:\Projects\EmissorOrdemServico\src\shared\uNotificacao.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/03 22:31:28.000.893,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/03 22:31:38.000.299,D:\Projects\EmissorOrdemServico\src\shared\uNotificacao.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/10 21:19:03.000.749,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/10 21:19:11.000.828,D:\Projects\EmissorOrdemServico\src\Unit1.pas=D:\Projects\EmissorOrdemServico\src\models\uFrotaModel.pas</Transaction>
+    <Transaction>2026/05/12 22:04:16.000.718,=D:\Projects\EmissorOrdemServico\src\forms\frmFrota.pas</Transaction>
+    <Transaction>2026/05/28 19:36:50.000.213,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/28 19:38:00.000.528,D:\Projects\EmissorOrdemServico\src\Unit1.pas=D:\Projects\EmissorOrdemServico\src\forms\FrmCadFrota.pas</Transaction>
+    <Transaction>2026/05/28 19:38:00.000.528,D:\Projects\EmissorOrdemServico\src\Unit1.dfm=D:\Projects\EmissorOrdemServico\src\forms\FrmCadFrota.dfm</Transaction>
+    <Transaction>2026/05/28 20:54:31.000.874,=D:\Projects\EmissorOrdemServico\src\services\uFrotaService.pas</Transaction>
+    <Transaction>2026/05/28 20:54:40.000.130,=D:\Projects\EmissorOrdemServico\src\repositories\uFrotaRepository.pas</Transaction>
+    <Transaction>2026/05/28 21:35:08.000.044,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/28 21:35:16.000.173,D:\Projects\EmissorOrdemServico\src\models\uRotaModel.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/28 21:37:53.000.009,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/28 21:38:01.000.316,D:\Projects\EmissorOrdemServico\src\repositories\uRotaRepository.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/28 22:02:46.000.556,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/28 22:02:54.000.895,D:\Projects\EmissorOrdemServico\src\services\uRotaService.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/28 22:05:25.000.618,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/28 22:05:47.000.376,D:\Projects\EmissorOrdemServico\src\forms\frmRotas.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/28 22:05:47.000.376,D:\Projects\EmissorOrdemServico\src\forms\frmRotas.dfm=D:\Projects\EmissorOrdemServico\src\Unit1.dfm</Transaction>
+    <Transaction>2026/05/28 22:23:43.000.103,=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/28 22:24:32.000.166,D:\Projects\EmissorOrdemServico\src\forms\frmCadRota.pas=D:\Projects\EmissorOrdemServico\src\Unit1.pas</Transaction>
+    <Transaction>2026/05/28 22:24:32.000.166,D:\Projects\EmissorOrdemServico\src\forms\frmCadRota.dfm=D:\Projects\EmissorOrdemServico\src\Unit1.dfm</Transaction>
   </Transactions>
 	<ProjectSortOrder AutoSort="0" SortType="0">
     <File Path="forms"/>
@@ -39,20 +59,34 @@
     <File Path="forms\frmClientes.dfm"/>
     <File Path="forms\frmPrincipal.pas"/>
     <File Path="forms\frmPrincipal.dfm"/>
+    <File Path="forms\frmFrota.pas"/>
+    <File Path="forms\frmFrota.dfm"/>
+    <File Path="forms\FrmCadFrota.pas"/>
+    <File Path="forms\FrmCadFrota.dfm"/>
+    <File Path="forms\frmRotas.pas"/>
+    <File Path="forms\frmRotas.dfm"/>
+    <File Path="forms\frmCadRota.pas"/>
+    <File Path="forms\frmCadRota.dfm"/>
     <File Path="infra"/>
     <File Path="infra\dmConexao.pas"/>
     <File Path="infra\dmConexao.dfm"/>
     <File Path="models"/>
     <File Path="models\uClienteModel.pas"/>
     <File Path="models\uEnderecoModel.pas"/>
+    <File Path="models\uFrotaModel.pas"/>
+    <File Path="models\uRotaModel.pas"/>
     <File Path="repositories"/>
     <File Path="repositories\uClienteRepository.pas"/>
+    <File Path="repositories\uFrotaRepository.pas"/>
+    <File Path="repositories\uRotaRepository.pas"/>
     <File Path="services"/>
     <File Path="services\uClienteService.pas"/>
     <File Path="services\uEnderecoService.pas"/>
+    <File Path="services\uFrotaService.pas"/>
+    <File Path="services\uRotaService.pas"/>
     <File Path="shared"/>
     <File Path="shared\uFormatacao.pas"/>
-    <File Path="shared\uValidacoes.pas"/>
     <File Path="shared\uNotificacao.pas"/>
+    <File Path="shared\uValidacoes.pas"/>
   </ProjectSortOrder>
 </BorlandProject>

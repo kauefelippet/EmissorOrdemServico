@@ -17,38 +17,37 @@ uses
 
 type
   TCadCliente = class(TForm)
-    // Dados Cadastrais
     grpDados: TGroupBox;
     lblCPFCNPJ: TLabel;
-    edtDocumento: TEdit;
     lblTipoDoc: TLabel;
     lblRazaoSocial: TLabel;
-    edtRazaoSocial: TEdit;
     lblNomeFantasia: TLabel;
-    edtNomeFantasia: TEdit;
     lblIERG: TLabel;
+    lblCriadoEm: TLabel;
+    lblAtualizadoEm: TLabel;
+    edtDocumento: TEdit;
+    edtRazaoSocial: TEdit;
+    edtNomeFantasia: TEdit;
     edtIERG: TEdit;
-    // Endereço
+
     grpEndereco: TGroupBox;
     lblCEP: TLabel;
+    lblLogradouro: TLabel;
+    lblNumero: TLabel;
+    lblBairro: TLabel;
+    lblCidade: TLabel;
+    lblUF: TLabel;
     edtCEP: TEdit;
     btnBuscarCEP: TButton;
-    lblLogradouro: TLabel;
     edtLogradouro: TEdit;
-    lblNumero: TLabel;
     edtNumero: TEdit;
-    lblBairro: TLabel;
     edtBairro: TEdit;
-    lblCidade: TLabel;
     edtCidade: TEdit;
-    lblUF: TLabel;
     cboUF: TComboBox;
-    // Rodapé
+
     pnlBotoes: TPanel;
     btnSalvar: TButton;
     btnCancelar: TButton;
-    lblCriadoEm: TLabel;
-    lblAtualizadoEm: TLabel;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

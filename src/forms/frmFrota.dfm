@@ -1,7 +1,7 @@
-object Clientes: TClientes
+object Frota: TFrota
   Left = 0
   Top = 0
-  Caption = 'Clientes'
+  Caption = 'Frota'
   ClientHeight = 479
   ClientWidth = 848
   Color = clBtnFace
@@ -10,9 +10,8 @@ object Clientes: TClientes
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
-  Position = poDesigned
   OnCreate = FormCreate
-  OnShow = FormCreate
+  OnDestroy = FormDestroy
   TextHeight = 15
   object pnlTopo: TPanel
     Left = 0
@@ -39,10 +38,8 @@ object Clientes: TClientes
       Font.Style = []
       ParentFont = False
       TabOrder = 0
-      TextHint = 'Buscar por Raz'#227'o Social/CPF/CNPJ/Nome Fantasia'
+      TextHint = 'Buscar por Placa/Descri'#231#227'o/Propriet'#225'rio'
       OnChange = edtBuscaChange
-      OnEnter = edtBuscaChange
-      OnKeyPress = edtBuscaKeyPress
     end
   end
   object pnlRodape: TPanel
@@ -114,14 +111,14 @@ object Clientes: TClientes
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
-    object gridClientes: TDBGrid
+    object gridFrota: TDBGrid
       Left = 0
       Top = 0
       Width = 848
       Height = 389
       Align = alClient
       BorderStyle = bsNone
-      DataSource = dsClientes
+      DataSource = dsFrota
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -13
@@ -136,25 +133,25 @@ object Clientes: TClientes
       TitleFont.Height = -13
       TitleFont.Name = 'Segoe UI'
       TitleFont.Style = [fsBold]
-      OnDblClick = gridClientesDblClick
-      OnKeyDown = gridClientesKeyDown
+      OnDblClick = gridFrotaDblClick
+      OnKeyDown = gridFrotaKeyDown
     end
   end
-  object qryClientes: TFDQuery
+  object qryFrota: TFDQuery
     CachedUpdates = True
-    Left = 800
-    Top = 363
+    Left = 796
+    Top = 371
   end
-  object dsClientes: TDataSource
-    DataSet = qryClientes
-    Left = 800
-    Top = 299
+  object dsFrota: TDataSource
+    DataSet = qryFrota
+    Left = 796
+    Top = 315
   end
   object tmrBusca: TTimer
     Enabled = False
     Interval = 1500
     OnTimer = tmrBuscaTimer
-    Left = 808
+    Left = 804
     Top = 48
   end
 end

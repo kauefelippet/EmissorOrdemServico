@@ -20,12 +20,15 @@ type
 
     // Valida se o CEP tem 8 digitos
     class function CEPValido(const ANumeros: string): Boolean;
+
+    // Valida se a placa usa padrao ABC1234 ou ABC1D23. AErro retorna mensagem se for invalido
+    class function PlacaValida(const APlaca: string; out AErro: string): Boolean;
   end;
 
 implementation
 
 uses
-  System.SysUtils;
+  System.SysUtils, System.Character;
 
 // ─── CPF ─────────────────────────────────────────────────────────────────────
 class function TValidacoes.CPFValido(const ANumeros: string): Boolean;
@@ -38,10 +41,8 @@ begin
 
   if Length(N) <> 11 then Exit;
 
-  // Rejeita sequências iguais como 111.111.111-11
   if (N = StringOfChar(N[1], 11)) then Exit;
 
-  // Primeiro digito verificador
   Soma := 0;
   for I := 1 to 9 do
     Soma := Soma + StrToInt(N[I]) * (11 - I);
@@ -49,7 +50,6 @@ begin
   if Resto < 2 then D1 := 0 else D1 := 11 - Resto;
   if D1 <> StrToInt(N[10]) then Exit;
 
-  // Segundo digito verificador
   Soma := 0;
   for I := 1 to 10 do
     Soma := Soma + StrToInt(N[I]) * (12 - I);
@@ -74,7 +74,6 @@ begin
   if Length(N) <> 14 then Exit;
   if N = StringOfChar(N[1], 14) then Exit;
 
-  // Pesos para o primeiro digito
   Pesos1[0]  := 5; Pesos1[1]  := 4; Pesos1[2]  := 3; Pesos1[3]  := 2;
   Pesos1[4]  := 9; Pesos1[5]  := 8; Pesos1[6]  := 7; Pesos1[7]  := 6;
   Pesos1[8]  := 5; Pesos1[9]  := 4; Pesos1[10] := 3; Pesos1[11] := 2;
@@ -86,7 +85,6 @@ begin
   if Resto < 2 then D1 := 0 else D1 := 11 - Resto;
   if D1 <> StrToInt(N[13]) then Exit;
 
-  // Pesos para o segundo digito
   Pesos2[0]  := 6; Pesos2[1]  := 5; Pesos2[2]  := 4; Pesos2[3]  := 3;
   Pesos2[4]  := 2; Pesos2[5]  := 9; Pesos2[6]  := 8; Pesos2[7]  := 7;
   Pesos2[8]  := 6; Pesos2[9]  := 5; Pesos2[10] := 4; Pesos2[11] := 3;
@@ -129,6 +127,60 @@ end;
 class function TValidacoes.CEPValido(const ANumeros: string): Boolean;
 begin
   Result := Length(ANumeros) = 8;
+end;
+
+// ─── Placa ───────────────────────────────────────────────────────────────────
+class function TValidacoes.PlacaValida(const APlaca: string;
+                                       out AErro: string): Boolean;
+var
+  P: string;
+begin
+  AErro  := '';
+  Result := False;
+
+  P := StringReplace(APlaca, '-', '', [rfReplaceAll]).ToUpper;
+
+  if Length(P) <> 7 then
+  begin
+    AErro := 'Placa inválida. Use o formato ABC1234 ou ABC1D23.';
+    Exit;
+  end;
+
+  if not (P[1].IsLetter and P[2].IsLetter and P[3].IsLetter) then
+  begin
+    AErro := 'Placa inválida. Os 3 primeiros caracteres devem ser letras.';
+    Exit;
+  end;
+
+  if not P[4].IsDigit then
+  begin
+    AErro := 'Placa inválida. O 4º caractere deve ser um número.';
+    Exit;
+  end;
+
+  if P[5].IsDigit then
+  begin
+    if not (P[6].IsDigit and P[7].IsDigit) then
+    begin
+      AErro := 'Placa inválida. Formato esperado: ABC1234.';
+      Exit;
+    end;
+  end
+  else if P[5].IsLetter then
+  begin
+    if not (P[6].IsDigit and P[7].IsDigit) then
+    begin
+      AErro := 'Placa inválida. Formato esperado: ABC1D23.';
+      Exit;
+    end;
+  end
+  else
+  begin
+    AErro := 'Placa inválida.';
+    Exit;
+  end;
+
+  Result := True;
 end;
 
 end.

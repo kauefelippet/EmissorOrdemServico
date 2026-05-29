@@ -61,27 +61,22 @@ var
   sErro   : string;
   sDigitos: string;
 begin
-  // Validação do documento
   sDigitos := TFormatacao.ApenasNumeros(ACliente.Documento);
 
   if not TValidacoes.DocumentoValido(sDigitos, sErro) then
     raise Exception.Create(sErro);
 
-  // Normalização: salva só os dígitos no banco
   ACliente.Documento := sDigitos;
   ACliente.CEP       := TFormatacao.ApenasNumeros(ACliente.CEP);
 
-  // Razão Social obrigatória
   if Trim(ACliente.RazaoSocial) = '' then
     raise Exception.Create('Razão Social é obrigatória.');
 
-  // Duplicidade de documento
   if FRepo.DocumentoDuplicado(ACliente.Documento, ACliente.ID) then
     raise Exception.Create(
       'Já existe um cliente cadastrado com este ' +
       TFormatacao.TipoDocumento(ACliente.Documento) + '.');
 
-  // Persistência
   if ACliente.ID = 0 then
     FRepo.Inserir(ACliente)
   else
@@ -95,8 +90,6 @@ begin
   except
     on E: Exception do
     begin
-      // Erro de chave estrangeira (FK) no Firebird contém código -530
-      // O cliente possui OS vinculada e não pode ser excluído
       if Pos('-530', E.Message) > 0 then
         raise Exception.Create(
           'O cliente "' + ANome + '" possui registros vinculados ' +
