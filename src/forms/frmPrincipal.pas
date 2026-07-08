@@ -48,7 +48,8 @@ implementation
 uses
   frmClientes,
   frmFrota,
-  frmRotas;
+  frmRotas,
+  frmOS;
 
 procedure TPrincipal.FormCreate(Sender: TObject);
 begin
@@ -110,7 +111,7 @@ end;
 // Movimento
 procedure TPrincipal.mnuMovOSClick(Sender: TObject);
 begin
-  TNotificacao.Info(Self, 'Módulo OS em desenvolvimento.');
+  AbrirForm(TOS);
 end;
 
 // Relatórios

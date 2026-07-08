@@ -55,7 +55,7 @@ object Principal: TPrincipal
       Caption = 'Transporte'
       object mnuMovOS: TMenuItem
         Caption = 'Emiss'#227'o de OS'
-        OnClick = mnuCadRotasClick
+        OnClick = mnuMovOSClick
       end
     end
     object mnuRelatorios: TMenuItem

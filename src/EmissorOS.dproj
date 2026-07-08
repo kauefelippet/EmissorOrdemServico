@@ -171,6 +171,18 @@
             <Form>CadRota</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="models\uOSNFeModel.pas"/>
+        <DCCReference Include="models\uOSModel.pas"/>
+        <DCCReference Include="repositories\uOSRepository.pas"/>
+        <DCCReference Include="services\uOSService.pas"/>
+        <DCCReference Include="forms\frmOS.pas">
+            <Form>OS</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="forms\frmEmissaoOS.pas">
+            <Form>TEmissaoOS</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

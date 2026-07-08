@@ -23,7 +23,13 @@ uses
   uRotaRepository in 'repositories\uRotaRepository.pas',
   uRotaService in 'services\uRotaService.pas',
   frmRotas in 'forms\frmRotas.pas' {Rotas},
-  frmCadRota in 'forms\frmCadRota.pas' {CadRota};
+  frmCadRota in 'forms\frmCadRota.pas' {CadRota},
+  uOSNFeModel in 'models\uOSNFeModel.pas',
+  uOSModel in 'models\uOSModel.pas',
+  uOSRepository in 'repositories\uOSRepository.pas',
+  uOSService in 'services\uOSService.pas',
+  frmOS in 'forms\frmOS.pas' {OS},
+  frmEmissaoOS in 'forms\frmEmissaoOS.pas' {TEmissaoOS};
 
 {$R *.res}
 
@@ -36,5 +42,11 @@ begin
   Application.CreateForm(TCadFrota, CadFrota);
   Application.CreateForm(TRotas, Rotas);
   Application.CreateForm(TCadRota, CadRota);
+  Application.CreateForm(TOS, OS);
+  Application.CreateForm(TEmissaoOS, EmissaoOS);
+  Application.CreateForm(TClientes, Clientes);
+  Application.CreateForm(TCadCliente, CadCliente);
+  Application.CreateForm(TOS, OS);
+  Application.CreateForm(TEmissaoOS, EmissaoOS);
   Application.Run;
 end.
