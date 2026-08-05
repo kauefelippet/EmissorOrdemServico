@@ -186,6 +186,22 @@ object OS: TOS
       TabOrder = 2
       OnClick = btnNovoClick
     end
+    object btnImprimir: TButton
+      Left = 640
+      Top = 22
+      Width = 110
+      Height = 36
+      Anchors = [akTop, akRight]
+      Caption = 'Imprimir'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 3
+      OnClick = btnImprimirClick
+    end
   end
   object tmrBusca: TTimer
     Enabled = False

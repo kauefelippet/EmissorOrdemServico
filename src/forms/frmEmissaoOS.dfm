@@ -100,7 +100,7 @@ object EmissaoOS: TEmissaoOS
       OnClick = btnCancelarOSClick
     end
     object btnFechar: TButton
-      Left = 712
+      Left = 592
       Top = 15
       Width = 110
       Height = 36
@@ -134,6 +134,25 @@ object EmissaoOS: TEmissaoOS
       ParentFont = False
       TabOrder = 3
       OnClick = btnEmitirClick
+    end
+    object btnVisualizar: TButton
+      Left = 1000
+      Top = 79
+      Width = 110
+      Height = 36
+      Anchors = [akTop, akRight]
+      Caption = 'Visualizar'
+      TabOrder = 4
+    end
+    object btnImprimir: TButton
+      Left = 712
+      Top = 15
+      Width = 110
+      Height = 36
+      Anchors = [akTop, akRight]
+      Caption = 'Imprimir'
+      TabOrder = 5
+      OnClick = btnImprimirClick
     end
   end
   object pnlResumoLateral: TPanel
@@ -336,7 +355,7 @@ object EmissaoOS: TEmissaoOS
     Top = 70
     Width = 820
     Height = 545
-    ActivePage = tsPasso1
+    ActivePage = tsPasso3
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -729,7 +748,7 @@ object EmissaoOS: TEmissaoOS
         end
         object edtBaseICMS: TEdit
           Left = 16
-          Top = 116
+          Top = 118
           Width = 140
           Height = 25
           Font.Charset = DEFAULT_CHARSET

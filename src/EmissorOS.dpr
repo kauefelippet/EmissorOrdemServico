@@ -29,7 +29,8 @@ uses
   uOSRepository in 'repositories\uOSRepository.pas',
   uOSService in 'services\uOSService.pas',
   frmOS in 'forms\frmOS.pas' {OS},
-  frmEmissaoOS in 'forms\frmEmissaoOS.pas' {TEmissaoOS};
+  frmEmissaoOS in 'forms\frmEmissaoOS.pas' {TEmissaoOS},
+  frmRelatorioOS in 'reports\frmRelatorioOS.pas' {RelatorioOS};
 
 {$R *.res}
 
@@ -48,5 +49,6 @@ begin
   Application.CreateForm(TCadCliente, CadCliente);
   Application.CreateForm(TOS, OS);
   Application.CreateForm(TEmissaoOS, EmissaoOS);
+  Application.CreateForm(TRelatorioOS, RelatorioOS);
   Application.Run;
 end.

@@ -90,21 +90,45 @@ end;
 // ─── CalcularFrete ────────────────────────────────────────────────────────────
 function TOSService.CalcularFrete(const ARota: TRotaModel;
   APeso, AQtd, AValorNF, AKM: Double): Double;
+var
+  ValorVariavel: Double;
 begin
+  ValorVariavel := 0;
+
   case IndexStr(ARota.TipoCalculo,
     [TIPO_FIXO, TIPO_KM, TIPO_PESO, TIPO_VOLUME, TIPO_VALOR_NF]) of
-    0: Result := ARota.ValorBase;                        // FIXO
-    1: Result := ARota.Multiplicador * AKM;              // POR_KM
-    2: Result := ARota.Multiplicador * APeso;            // POR_PESO
-    3: Result := ARota.Multiplicador * AQtd;             // POR_VOLUME
-    4: Result := ARota.Multiplicador * AValorNF;         // POR_VALOR
+
+    0: // FIXO — usa só o valor base, sem multiplicador
+      begin
+        Result := ARota.ValorBase;
+        Exit; // sai direto, sem somar ValorBase de novo abaixo
+      end;
+
+    1: // POR_KM — R$ por KM rodado
+       // Ex: R$ 2,50/KM × 150 KM = R$ 375,00
+      ValorVariavel := ARota.Multiplicador * AKM;
+
+    2: // POR_PESO — R$ por KG
+       // Ex: R$ 0,08/KG × 18.600 KG = R$ 1.488,00
+      ValorVariavel := ARota.Multiplicador * APeso;
+
+    3: // POR_VOLUME — R$ por unidade/volume
+       // Ex: R$ 12,00/vol × 23 vol = R$ 276,00
+      ValorVariavel := ARota.Multiplicador * AQtd;
+
+    4: // POR_VALOR — % sobre o valor da NF-e
+       // Multiplicador é PERCENTUAL: entrar 5 = 5% do valor da NF
+       // Ex: 5% × R$ 62.312,82 = R$ 3.115,64
+      ValorVariavel := AValorNF * (ARota.Multiplicador / 100);
+
   else
     Result := 0;
+    Exit;
   end;
 
-  // Soma o valor base quando não for tipo FIXO (valor base adicional opcional)
-  if (ARota.TipoCalculo <> TIPO_FIXO) and (ARota.ValorBase > 0) then
-    Result := Result + ARota.ValorBase;
+  // Para tipos variáveis, soma o valor base adicional se houver
+  // (campo opcional no cadastro de rota)
+  Result := ValorVariavel + ARota.ValorBase;
 end;
 
 // ─── CalcularICMS ─────────────────────────────────────────────────────────────

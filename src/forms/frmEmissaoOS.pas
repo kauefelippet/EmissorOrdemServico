@@ -9,7 +9,7 @@ uses
   Vcl.Grids, Vcl.ValEdit, Vcl.Dialogs, Data.DB,
   FireDAC.Comp.Client, dmConexao,
   uOSModel, uOSNFeModel, uOSService,
-  uRotaModel, uFormatacao, uNotificacao;
+  uRotaModel, uFormatacao, uNotificacao, frmRelatorioOS;
 
 type
   TEmissaoOS = class(TForm)
@@ -71,6 +71,8 @@ type
     grpObs: TGroupBox;
     memoObs: TMemo;
     btnRecalcularFrete: TButton;
+    btnVisualizar: TButton;
+    btnImprimir: TButton;
 
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -78,6 +80,7 @@ type
     procedure btnSalvarClick(Sender: TObject);
     procedure btnEmitirClick(Sender: TObject);
     procedure btnCancelarOSClick(Sender: TObject);
+    procedure btnImprimirClick(Sender: TObject);
     procedure btnFecharClick(Sender: TObject);
     procedure btnAddNFeClick(Sender: TObject);
     procedure btnRemNFeClick(Sender: TObject);
@@ -445,8 +448,11 @@ end;
 // Ao sair do campo frete, recalcula ICMS com o novo valor manual
 procedure TEmissaoOS.edtFreteExit(Sender: TObject);
 begin
-  if FFreteManual then
-    RecalcularICMS;
+  if not FFreteManual then Exit;
+
+  edtBaseICMS.Text        := edtFrete.Text;
+  FBaseICMSAutoPreenchida := False;
+  RecalcularICMS;
 end;
 
 // ─── RecalcularFrete — usa Service com dados atuais da tela ──────────────────
@@ -925,6 +931,28 @@ begin
     except
       on E: Exception do TNotificacao.Erro(Self, E.Message);
     end;
+  end;
+end;
+
+procedure TEmissaoOS.btnImprimirClick(Sender: TObject);
+var
+  Rel     : TRelatorioOS;
+  LogoPath: string;
+begin
+  if OSID = 0 then
+  begin
+    TNotificacao.Aviso(Self, 'Salve a OS antes de imprimir.');
+    Exit;
+  end;
+
+  // Ajuste o caminho para sua logo
+  LogoPath := ExtractFilePath(Application.ExeName) + 'logo.png';
+
+  Rel := TRelatorioOS.Create(Self);
+  try
+    Rel.Imprimir(OSID, LogoPath);
+  finally
+    Rel.Free;
   end;
 end;
 

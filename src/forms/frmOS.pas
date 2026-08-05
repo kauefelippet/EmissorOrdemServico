@@ -9,7 +9,7 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
-  uOSModel, uOSService, uNotificacao,
+  uOSModel, uOSService, uNotificacao, frmRelatorioOS,
   frmEmissaoOS;
 
 type
@@ -28,12 +28,14 @@ type
     tmrBusca: TTimer;
     qryOS: TFDQuery;
     dsOS: TDataSource;
+    btnImprimir: TButton;
 
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure btnBuscarClick(Sender: TObject);
     procedure btnNovoClick(Sender: TObject);
     procedure btnAbrirClick(Sender: TObject);
+    procedure btnImprimirClick(Sender: TObject);
     procedure btnExcluirClick(Sender: TObject);
     procedure edtBuscaChange(Sender: TObject);
     procedure tmrBuscaTimer(Sender: TObject);
@@ -185,6 +187,25 @@ begin
     Exit;
   end;
   AbrirEmissao(qryOS.FieldByName('ID').AsInteger);
+end;
+
+procedure TOS.btnImprimirClick(Sender: TObject);
+var
+  Rel: TRelatorioOS;
+begin
+  if qryOS.IsEmpty then
+  begin
+    TNotificacao.Aviso(Self, 'Selecione uma OS para imprimir.');
+    Exit;
+  end;
+
+  Rel := TRelatorioOS.Create(Self);
+  try
+    Rel.Imprimir(qryOS.FieldByName('ID').AsInteger,
+                 ExtractFilePath(Application.ExeName) + 'logo.png');
+  finally
+    Rel.Free;
+  end;
 end;
 
 procedure TOS.gridOSDblClick(Sender: TObject);
