@@ -57,19 +57,19 @@ type
     hdrQtd: TRLLabel;
     hdrValor: TRLLabel;
 
-    btMasterDetail: TRLBand; // Banda mestre invisível que aciona a leitura
+    btMasterDetail: TRLBand;
 
-    btNFeDetail: TRLSubDetail; // Contêiner do sub-relatório
-    bndNFeRow: TRLBand;        // Banda filha de detalhe da NF-e
+    btNFeDetail: TRLSubDetail;
+    bndNFeRow: TRLBand;
     dbNFeNum: TRLDBText;
     dbNFeSerie: TRLDBText;
-    dbNFeEmit: TRLDBText;
+    dbNFeEmit: TRLDBMemo;
     dbNFeChave: TRLDBText;
     dbNFePeso: TRLDBText;
     dbNFeQtd: TRLDBText;
     dbNFeValor: TRLDBText;
 
-    btNFeFooter: TRLBand;      // Banda filha de sumário da NF-e
+    btNFeFooter: TRLBand;
     pnlTotCarga: TRLPanel;
     lblTotCarga: TRLLabel;
     resNFePeso: TRLDBResult;
@@ -80,6 +80,8 @@ type
     lblVeiculo: TRLLabel;
     dbPlaca: TRLDBText;
     dbFrotaDesc: TRLDBText;
+    lblRota: TRLLabel;
+    dbRota: TRLDBText;
 
     btSummary: TRLBand;
     rlDrawSep: TRLDraw;
@@ -156,6 +158,7 @@ type
     qryOSFROTA_DESC: TWideStringField;
     qryOSROTA_DESC: TWideStringField;
 
+    procedure btSummaryBeforePrint(Sender: TObject; var PrintIt: Boolean);
   private
     procedure FormatarCamposNumericos;
     procedure PrepararDados(const AOSID: Integer);
@@ -198,12 +201,19 @@ begin
   qryOS.Close;
   qryOS.ParamByName('pID').AsInteger := AOSID;
   qryOS.Open;
-  qryOS.FetchAll; // Garante que todos os dados subam para a memória e fiquem visíveis para o Fortes
 
   qryNFe.Close;
   qryNFe.ParamByName('pOS').AsInteger := AOSID;
   qryNFe.Open;
-  qryNFe.FetchAll; // Idem para as notas
+end;
+
+procedure TRelatorioOS.btSummaryBeforePrint(Sender: TObject; var PrintIt: Boolean);
+begin
+  // TRUQUE DE MESTRE: O Fortes avança para o EOF após imprimir os detalhes.
+  // Isso faz com que os Totais e a Observação fiquem em branco.
+  // Esta linha puxa o cursor da OS de volta para os dados, garantindo a impressão perfeita!
+  if not qryOS.IsEmpty and qryOS.Eof then
+    qryOS.First;
 end;
 
 procedure TRelatorioOS.Imprimir(const AOSID: Integer; const ALogoPath: string = '');

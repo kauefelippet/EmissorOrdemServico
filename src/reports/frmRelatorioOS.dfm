@@ -440,7 +440,7 @@ object RelatorioOS: TRelatorioOS
         object hdrChave: TRLLabel
           Left = 246
           Top = 2
-          Width = 267
+          Width = 275
           Height = 13
           Caption = 'Chave NF-e'
           Font.Charset = DEFAULT_CHARSET
@@ -451,7 +451,7 @@ object RelatorioOS: TRelatorioOS
           ParentFont = False
         end
         object hdrPeso: TRLLabel
-          Left = 513
+          Left = 522
           Top = 2
           Width = 70
           Height = 13
@@ -465,7 +465,7 @@ object RelatorioOS: TRelatorioOS
           ParentFont = False
         end
         object hdrQtd: TRLLabel
-          Left = 585
+          Left = 592
           Top = 2
           Width = 40
           Height = 13
@@ -479,9 +479,9 @@ object RelatorioOS: TRelatorioOS
           ParentFont = False
         end
         object hdrValor: TRLLabel
-          Left = 625
+          Left = 630
           Top = 2
-          Width = 90
+          Width = 85
           Height = 13
           Alignment = taRightJustify
           Caption = 'Valor (R$)'
@@ -531,20 +531,19 @@ object RelatorioOS: TRelatorioOS
           DataSource = dtsNFe
           Text = ''
         end
-        object dbNFeEmit: TRLDBText
+        object dbNFeEmit: TRLDBMemo
           Left = 104
           Top = 2
           Width = 140
           Height = 13
-          AutoSize = False
+          Behavior = [beSiteExpander]
           DataField = 'EMITENTE'
           DataSource = dtsNFe
-          Text = ''
         end
         object dbNFeChave: TRLDBText
           Left = 246
           Top = 2
-          Width = 267
+          Width = 275
           Height = 13
           AutoSize = False
           DataField = 'CHAVE_NFE'
@@ -552,7 +551,7 @@ object RelatorioOS: TRelatorioOS
           Text = ''
         end
         object dbNFePeso: TRLDBText
-          Left = 513
+          Left = 522
           Top = 2
           Width = 70
           Height = 13
@@ -563,7 +562,7 @@ object RelatorioOS: TRelatorioOS
           Text = ''
         end
         object dbNFeQtd: TRLDBText
-          Left = 585
+          Left = 592
           Top = 2
           Width = 40
           Height = 13
@@ -574,9 +573,9 @@ object RelatorioOS: TRelatorioOS
           Text = ''
         end
         object dbNFeValor: TRLDBText
-          Left = 625
+          Left = 630
           Top = 2
-          Width = 90
+          Width = 85
           Height = 13
           Alignment = taRightJustify
           AutoSize = False
@@ -600,8 +599,8 @@ object RelatorioOS: TRelatorioOS
           ParentColor = False
           Transparent = False
           object lblTotCarga: TRLLabel
-            Left = 360
-            Top = 4
+            Left = 400
+            Top = 3
             Width = 110
             Height = 13
             Alignment = taRightJustify
@@ -614,8 +613,8 @@ object RelatorioOS: TRelatorioOS
             ParentFont = False
           end
           object resNFePeso: TRLDBResult
-            Left = 513
-            Top = 4
+            Left = 522
+            Top = 3
             Width = 70
             Height = 13
             Alignment = taRightJustify
@@ -633,8 +632,8 @@ object RelatorioOS: TRelatorioOS
             Text = ''
           end
           object resNFeQtd: TRLDBResult
-            Left = 585
-            Top = 4
+            Left = 592
+            Top = 3
             Width = 40
             Height = 13
             Alignment = taCenter
@@ -652,9 +651,9 @@ object RelatorioOS: TRelatorioOS
             Text = ''
           end
           object resNFeValor: TRLDBResult
-            Left = 625
-            Top = 4
-            Width = 90
+            Left = 630
+            Top = 3
+            Width = 85
             Height = 13
             Alignment = taRightJustify
             AutoSize = False
@@ -725,14 +724,38 @@ object RelatorioOS: TRelatorioOS
           DataSource = dtsOS
           Text = ''
         end
+        object lblRota: TRLLabel
+          Left = 335
+          Top = 62
+          Width = 30
+          Height = 13
+          Caption = 'Rota:'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clBlack
+          Font.Height = -11
+          Font.Name = 'Segoe UI'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object dbRota: TRLDBText
+          Left = 370
+          Top = 62
+          Width = 340
+          Height = 13
+          AutoSize = False
+          DataField = 'ROTA_DESC'
+          DataSource = dtsOS
+          Text = ''
+        end
       end
     end
     object btSummary: TRLBand
       Left = 38
       Top = 397
       Width = 718
-      Height = 372
+      Height = 436
       BandType = btSummary
+      BeforePrint = btSummaryBeforePrint
       object rlDrawSep: TRLDraw
         Left = 0
         Top = 10

@@ -18,10 +18,6 @@ type
     // Movimento
     mnuTransporte   : TMenuItem;
     mnuMovOS       : TMenuItem;
-    // Relatórios
-    mnuRelatorios  : TMenuItem;
-    mnuRelOSPeriodo: TMenuItem;
-    mnuRelOSCliente: TMenuItem;
     lblUsuario: TLabel;
     pnlStatus: TPanel;
     lblStatus: TLabel;

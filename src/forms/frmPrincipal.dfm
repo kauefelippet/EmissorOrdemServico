@@ -58,16 +58,5 @@ object Principal: TPrincipal
         OnClick = mnuMovOSClick
       end
     end
-    object mnuRelatorios: TMenuItem
-      Caption = 'Relat'#243'rios'
-      object mnuRelOSPeriodo: TMenuItem
-        Caption = 'OS por Per'#237'odo'
-        OnClick = mnuRelOSPeriodoClick
-      end
-      object mnuRelOSCliente: TMenuItem
-        Caption = 'OS por Cliente'
-        OnClick = mnuRelOSClienteClick
-      end
-    end
   end
 end
