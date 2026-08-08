@@ -4,12 +4,11 @@ interface
 
 uses
   Winapi.Windows, System.SysUtils, System.Classes, System.StrUtils, System.Math, System.Character,
-  System.Generics.Collections, Xml.XMLIntf, Xml.XMLDoc,
+  System.Generics.Collections,
   Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
-  Vcl.Grids, Vcl.ValEdit, Vcl.Dialogs, Data.DB,
-  FireDAC.Comp.Client, dmConexao,
+  Vcl.Grids, Vcl.ValEdit, Vcl.Dialogs,
   uOSModel, uOSNFeModel, uOSService,
-  uRotaModel, uFormatacao, uNotificacao, frmRelatorioOS;
+  uRotaModel, uNotificacao, frmRelatorioOS;
 
 type
   TEmissaoOS = class(TForm)
@@ -128,6 +127,8 @@ type
     procedure SelecionarCombo(ACbo: TComboBox; AIDList: TList<Integer>;
                               AID: Integer);
     function  IDDaCombo(ACbo: TComboBox; AIDList: TList<Integer>): Integer;
+    procedure PreencherCombo(ACbo: TComboBox; AIDList: TList<Integer>;
+                             AItens: TList<TLookupItem>);
     procedure ImportarXMLNFe(const AArquivo: string);
   end;
 
@@ -248,73 +249,59 @@ end;
 // ─── CarregarLookups — preenche todos os ComboBoxes ──────────────────────────
 procedure TEmissaoOS.CarregarLookups;
 var
-  qry: TFDQuery;
+  Itens: TList<TLookupItem>;
 begin
-  qry := TFDQuery.Create(nil);
+  // Clientes — mesma lista alimenta remetente, destinatário e tomador
+  Itens := FService.ListarClientesLookup;
   try
-    // Clientes
-    FService.CarregarClientes(qry);
-    cboRemetente.Items.Clear; cboDest.Items.Clear; cboTomador.Items.Clear;
     FIDsClientes.Clear;
-
-    cboRemetente.Items.Add('— Selecione —');
-    cboDest.Items.Add('— Selecione —');
-    cboTomador.Items.Add('— Selecione —');
-    FIDsClientes.Add(0);
-
-    qry.First;
-    while not qry.Eof do
-    begin
-      cboRemetente.Items.Add(qry.FieldByName('RAZAO_SOCIAL').AsString);
-      cboDest.Items.Add(qry.FieldByName('RAZAO_SOCIAL').AsString);
-      cboTomador.Items.Add(qry.FieldByName('RAZAO_SOCIAL').AsString);
-      FIDsClientes.Add(qry.FieldByName('ID').AsInteger);
-      qry.Next;
-    end;
-    cboRemetente.ItemIndex := 0;
-    cboDest.ItemIndex      := 0;
-    cboTomador.ItemIndex   := 0;
-
-    // Frota
-    qry.Close;
-    FService.CarregarFrota(qry);
-    cboFrota.Items.Clear;
-    FIDsFrota.Clear;
-    cboFrota.Items.Add('— Selecione —');
-    FIDsFrota.Add(0);
-    qry.First;
-    while not qry.Eof do
-    begin
-      cboFrota.Items.Add(
-        TFormatacao.FormatarPlaca(qry.FieldByName('PLACA').AsString) +
-        ' — ' + qry.FieldByName('DESCRICAO').AsString);
-      FIDsFrota.Add(qry.FieldByName('ID').AsInteger);
-      qry.Next;
-    end;
-    cboFrota.ItemIndex := 0;
-
-    // Rotas — também armazena o model completo para cálculo
-    qry.Close;
-    FService.CarregarRotas(qry);
-    cboRota.Items.Clear;
-    FIDsRotas.Clear;
-    cboRota.Items.Add('— Selecione —');
-    FIDsRotas.Add(0);
-    qry.First;
-    while not qry.Eof do
-    begin
-      cboRota.Items.Add(qry.FieldByName('DESCRICAO').AsString);
-      FIDsRotas.Add(qry.FieldByName('ID').AsInteger);
-      qry.Next;
-    end;
-    cboRota.ItemIndex := 0;
-
+    PreencherCombo(cboRemetente, FIDsClientes, Itens);
+    PreencherCombo(cboDest,      nil,          Itens);
+    PreencherCombo(cboTomador,   nil,          Itens);
   finally
-    qry.Free;
+    Itens.Free;
+  end;
+
+  // Frota
+  Itens := FService.ListarFrotaLookup;
+  try
+    FIDsFrota.Clear;
+    PreencherCombo(cboFrota, FIDsFrota, Itens);
+  finally
+    Itens.Free;
+  end;
+
+  // Rotas
+  Itens := FService.ListarRotasLookup;
+  try
+    FIDsRotas.Clear;
+    PreencherCombo(cboRota, FIDsRotas, Itens);
+  finally
+    Itens.Free;
   end;
 end;
 
 // ─── Utilitários de ComboBox + Lista paralela ─────────────────────────────────
+procedure TEmissaoOS.PreencherCombo(ACbo: TComboBox; AIDList: TList<Integer>;
+  AItens: TList<TLookupItem>);
+var
+  Item: TLookupItem;
+begin
+  ACbo.Items.Clear;
+  ACbo.Items.Add('— Selecione —');
+  if Assigned(AIDList) then
+    AIDList.Add(0);
+
+  for Item in AItens do
+  begin
+    ACbo.Items.Add(Item.Descricao);
+    if Assigned(AIDList) then
+      AIDList.Add(Item.ID);
+  end;
+
+  ACbo.ItemIndex := 0;
+end;
+
 procedure TEmissaoOS.SelecionarCombo(ACbo: TComboBox;
   AIDList: TList<Integer>; AID: Integer);
 var I: Integer;
@@ -370,7 +357,7 @@ begin
   SelecionarCombo(cboRota,      FIDsRotas,    AOS.IDRota);
 
   cboTipoTomador.ItemIndex := AOS.TipoTomador;
-  if AOS.TipoTomador = OS_TOMADOR_TERCEIRO then
+  if FService.ExigeTomadorTerceiro(AOS.TipoTomador) then
     SelecionarCombo(cboTomador, FIDsClientes, AOS.IDTomador);
 
   edtKM.Text      := IfThen(AOS.KM > 0, FormatFloat('0.00', AOS.KM), '');
@@ -413,22 +400,14 @@ end;
 // ─── AtualizarTotaisNFe — soma campos das NF-es e recalcula frete ─────────────
 procedure TEmissaoOS.AtualizarTotaisNFe;
 var
-  TotalPeso: Double;
-  TotalQtd : Integer;
-  TotalVal : Double;
-  NFe      : TOSNFeModel;
+  AOS: TOrdemServicoModel;
 begin
-  TotalPeso := 0; TotalQtd := 0; TotalVal := 0;
-  for NFe in FNFes do
-  begin
-    TotalPeso := TotalPeso + NFe.Peso;
-    TotalQtd  := TotalQtd  + NFe.Quantidade;
-    TotalVal  := TotalVal  + NFe.ValorMercadoria;
-  end;
+  AOS := TOrdemServicoModel.Novo;
+  FService.RecalcularTotaisNFe(AOS, FNFes);
 
-  edtPeso.Text  := FormatFloat('0.000', TotalPeso);
-  edtQtd.Text   := TotalQtd.ToString;
-  edtValNF.Text := FormatFloat('0.00', TotalVal);
+  edtPeso.Text  := FormatFloat('0.000', AOS.PesoTotal);
+  edtQtd.Text   := AOS.QuantidadeTotal.ToString;
+  edtValNF.Text := FormatFloat('0.00', AOS.ValorMercadoria);
 
   RecalcularFrete;
 end;
@@ -458,25 +437,23 @@ end;
 // ─── RecalcularFrete — usa Service com dados atuais da tela ──────────────────
 procedure TEmissaoOS.RecalcularFrete;
 var
-  Frete: Double;
+  Frete, Base: Double;
 begin
-  if FRotaAtual.ID = 0 then Exit;
-
-  // Se usuário editou manualmente, não sobrescreve
-  if FFreteManual then Exit;
-
-  Frete := FService.CalcularFrete(
-    FRotaAtual,
-    StrToFloatDef(StringReplace(edtPeso.Text, ',', '.', [rfReplaceAll]), 0),
-    StrToIntDef(edtQtd.Text, 0),
-    StrToFloatDef(StringReplace(edtValNF.Text, ',', '.', [rfReplaceAll]), 0),
-    StrToFloatDef(StringReplace(edtKM.Text,    ',', '.', [rfReplaceAll]), 0));
+  if not FService.CalcularFreteAutomatico(
+       FRotaAtual,
+       StrToFloatDef(StringReplace(edtPeso.Text, ',', '.', [rfReplaceAll]), 0),
+       StrToIntDef(edtQtd.Text, 0),
+       StrToFloatDef(StringReplace(edtValNF.Text, ',', '.', [rfReplaceAll]), 0),
+       StrToFloatDef(StringReplace(edtKM.Text,    ',', '.', [rfReplaceAll]), 0),
+       FFreteManual, Frete) then
+    Exit;
 
   edtFrete.Text := FormatFloat('0.00', Frete);
 
-  if (Trim(edtBaseICMS.Text) = '') or FBaseICMSAutoPreenchida then
+  if FService.CalcularBaseICMSAutomatica(Frete,
+       Trim(edtBaseICMS.Text) <> '', FBaseICMSAutoPreenchida, Base) then
   begin
-    edtBaseICMS.Text        := FormatFloat('0.00', Frete);
+    edtBaseICMS.Text        := FormatFloat('0.00', Base);
     FBaseICMSAutoPreenchida := True;
     RecalcularICMS;
   end;
@@ -512,52 +489,30 @@ end;
 // ─── Muda a rota selecionada — atualiza FRotaAtual e recalcula ────────────────
 procedure TEmissaoOS.cboRotaChange(Sender: TObject);
 var
-  qry   : TFDQuery;
   IDRota: Integer;
 begin
-  IDRota := IDDaCombo(cboRota, FIDsRotas);
+  IDRota     := IDDaCombo(cboRota, FIDsRotas);
+  FRotaAtual := FService.BuscarRota(IDRota);
+
   if IDRota = 0 then
   begin
-    FRotaAtual              := TRotaModel.Novo;
     FBaseICMSAutoPreenchida := True; // reseta ao trocar rota
     AtualizarVisibilidadeCampos;
     Exit;
   end;
 
-  qry := TFDQuery.Create(nil);
-  try
-    qry.Connection := Conexao.Conexao;
-    qry.SQL.Text   := 'SELECT * FROM ROTAS WHERE ID = :pID';
-    qry.ParamByName('pID').AsInteger := IDRota;
-    qry.Open;
-
-    if not qry.IsEmpty then
-    begin
-      FRotaAtual.ID            := qry.FieldByName('ID').AsInteger;
-      FRotaAtual.TipoCalculo   := qry.FieldByName('TIPO_CALCULO').AsString;
-      FRotaAtual.ValorBase     := qry.FieldByName('VALOR_BASE').AsFloat;
-      FRotaAtual.Multiplicador := qry.FieldByName('MULTIPLICADOR').AsFloat;
-      FRotaAtual.Descricao     := qry.FieldByName('DESCRICAO').AsString;
-    end;
-  finally
-    qry.Free;
-  end;
-
-  FFreteManual            := False; // nova rota reseta o frete manual
-  FBaseICMSAutoPreenchida := True; // nova rota → base ICMS volta ao automático
+  FFreteManual            := False;
+  FBaseICMSAutoPreenchida := True;
   AtualizarVisibilidadeCampos;
-  RecalcularFrete; // ← recalcula com a nova rota
+  RecalcularFrete;
 end;
 
-// ─── Visibilidade do campo KM e ComboBox Tomador ─────────────────────────────
 procedure TEmissaoOS.AtualizarVisibilidadeCampos;
 begin
-  // Campo KM só aparece para rotas POR_KM
-  lblKM.Visible := FRotaAtual.TipoCalculo = TIPO_KM;
-  edtKM.Visible := FRotaAtual.TipoCalculo = TIPO_KM;
+  lblKM.Visible := FService.RotaExigeKM(FRotaAtual);
+  edtKM.Visible := FService.RotaExigeKM(FRotaAtual);
 
-  // ComboBox Tomador só aparece se tipo = Terceiro
-  cboTomador.Visible := cboTipoTomador.ItemIndex = OS_TOMADOR_TERCEIRO;
+  cboTomador.Visible := FService.ExigeTomadorTerceiro(cboTipoTomador.ItemIndex);
 end;
 
 procedure TEmissaoOS.cboTipoTomadorChange(Sender: TObject);
@@ -565,19 +520,17 @@ begin
   AtualizarVisibilidadeCampos;
 end;
 
-// ─── Status visual do badge ───────────────────────────────────────────────────
 procedure TEmissaoOS.AtualizarStatusVisual(const AStatus: string);
 begin
   lblStatus.Caption := AStatus;
   case IndexStr(AStatus,
     [OS_STATUS_ABERTA, OS_STATUS_EMITIDA, OS_STATUS_CANCELADA]) of
-    0: lblStatus.Font.Color := $008000; // verde
-    1: lblStatus.Font.Color := $0050CC; // azul
-    2: lblStatus.Font.Color := $2020CC; // vermelho
+    0: lblStatus.Font.Color := $008000;
+    1: lblStatus.Font.Color := $0050CC;
+    2: lblStatus.Font.Color := $2020CC;
   end;
 end;
 
-// ─── Habilita/desabilita campos conforme status ───────────────────────────────
 procedure TEmissaoOS.DefinirEdicao(const AEditavel: Boolean);
 begin
   cboRemetente.Enabled    := AEditavel;
@@ -600,7 +553,6 @@ begin
   dtpData.Enabled         := AEditavel;
 end;
 
-// ─── NF-e: Adicionar linha manual ────────────────────────────────────────────
 procedure TEmissaoOS.btnAddNFeClick(Sender: TObject);
 var
   NFe: TOSNFeModel;
@@ -609,17 +561,15 @@ begin
   NFe.IDOS := OSID;
   FNFes.Add(NFe);
   AtualizarGridNFe;
-  // Foco na última linha para digitação
   gridNFe.Row := gridNFe.RowCount - 1;
   gridNFe.Col := 0;
 end;
 
-// ─── NF-e: Remover linha selecionada ─────────────────────────────────────────
 procedure TEmissaoOS.btnRemNFeClick(Sender: TObject);
 var
   Linha: Integer;
 begin
-  Linha := gridNFe.Row - 1; // -1 pelo cabeçalho
+  Linha := gridNFe.Row - 1;
   if (Linha < 0) or (Linha >= FNFes.Count) then
   begin
     TNotificacao.Aviso(Self, 'Selecione uma NF-e para remover.');
@@ -634,21 +584,19 @@ begin
   end;
 end;
 
-// Impede edição do cabeçalho (linha 0)
 procedure TEmissaoOS.gridNFeSelectCell(Sender: TObject; ACol, ARow: Integer;
   var CanSelect: Boolean);
 begin
   CanSelect := ARow > 0;
 end;
 
-// Sincroniza o que o usuário digitou na grid com o FNFes
 procedure TEmissaoOS.gridNFeSetEditText(Sender: TObject; ACol, ARow: Integer;
   const Value: string);
 var
   Idx: Integer;
   NFe: TOSNFeModel;
 begin
-  Idx := ARow - 1; // desconta cabeçalho
+  Idx := ARow - 1;
   if (Idx < 0) or (Idx >= FNFes.Count) then Exit;
 
   NFe := FNFes[Idx];
@@ -665,14 +613,12 @@ begin
                                StringReplace(Value, ',', '.', [rfReplaceAll]), 0);
   end;
 
-  FNFes[Idx] := NFe; // record é valor — precisa reatribuir
+  FNFes[Idx] := NFe;
 
-  // Recalcula totais sempre que Peso, Qtd ou Valor forem editados
   if ACol in [4, 5, 6] then
     AtualizarTotaisNFe;
 end;
 
-// ─── NF-e: Importar XML ──────────────────────────────────────────────────────
 procedure TEmissaoOS.btnImportXMLClick(Sender: TObject);
 var
   dlg: TOpenDialog;
@@ -697,102 +643,13 @@ begin
   end;
 end;
 
-// ─── ImportarXMLNFe — lê tags da NF-e e preenche um TOSNFeModel ──────────────
+// ─── ImportarXMLNFe — delega a leitura ao Service e exibe o resultado ────────
 procedure TEmissaoOS.ImportarXMLNFe(const AArquivo: string);
 var
-  XML  : IXMLDocument;
   Model: TOSNFeModel;
-
-  // Busca recursiva ignorando namespace — resolve o problema do xmlns
-  function BuscarNo(ANode: IXMLNode; const ATag: string): IXMLNode;
-  var
-    I   : Integer;
-    Nome: string;
-    Sub : IXMLNode;
-  begin
-    Result := nil;
-    if ANode = nil then Exit;
-
-    for I := 0 to ANode.ChildNodes.Count - 1 do
-    begin
-      Sub  := ANode.ChildNodes[I];
-      // LocalName remove o prefixo de namespace (ex: "nfe:ide" → "ide")
-      Nome := Sub.LocalName;
-      if SameText(Nome, ATag) then
-      begin
-        Result := Sub;
-        Exit;
-      end;
-      // Busca nos filhos recursivamente
-      Result := BuscarNo(Sub, ATag);
-      if Result <> nil then Exit;
-    end;
-  end;
-
-  function NodeTxt(ANode: IXMLNode; const ATag: string): string;
-  var N: IXMLNode;
-  begin
-    Result := '';
-    N := BuscarNo(ANode, ATag);
-    if N <> nil then Result := Trim(N.Text);
-  end;
-
-  function ToFloat(const S: string): Double;
-  begin
-    // TFormatSettings.Invariant garante que '.' é sempre o separador decimal
-    // independente do locale do Windows — essencial para XML que sempre usa '.'
-    Result := StrToFloatDef(S, 0, TFormatSettings.Invariant);
-  end;
-
 begin
   try
-    XML := TXMLDocument.Create(nil);
-    XML.Options  := XML.Options + [doNodeAutoCreate];
-    XML.LoadFromFile(AArquivo);
-    XML.Active   := True;
-
-    Model := TOSNFeModel.Novo;
-
-    var Root   := XML.DocumentElement; // nfeProc ou NFe
-    var infNFe := BuscarNo(Root, 'infNFe');
-
-    if infNFe = nil then
-    begin
-      TNotificacao.Erro(Self, 'XML inválido: nó infNFe não encontrado.');
-      Exit;
-    end;
-
-    // ── Identificação ──────────────────────────────────────────────────────
-    Model.NumeroNFe := NodeTxt(infNFe, 'nNF');
-    Model.Serie     := NodeTxt(infNFe, 'serie');
-
-    // Chave — atributo Id do infNFe
-    var sChave := '';
-    if infNFe.HasAttribute('Id') then
-      sChave := infNFe.Attributes['Id'];
-    Model.ChaveNFe := StringReplace(sChave, 'NFe', '', [rfReplaceAll]);
-
-    // ── Emitente ───────────────────────────────────────────────────────────
-    var emit := BuscarNo(infNFe, 'emit');
-    if emit <> nil then
-      Model.Emitente := NodeTxt(emit, 'xNome');
-
-    // ── Valor total dos produtos (total/vNFTot) ───────────────────────────
-    var total   := BuscarNo(infNFe, 'total');
-    if total <> nil then
-      Model.ValorMercadoria := ToFloat(NodeTxt(total, 'vNFTot'));
-
-    // ── Transporte: vol/pesoB e vol/qVol ──────────────────────────────────
-    // No XML: transp → vol → pesoB / qVol
-    var transp := BuscarNo(infNFe, 'transp');
-    var vol    := BuscarNo(transp,  'vol');
-    if vol <> nil then
-    begin
-      Model.Peso       := ToFloat(NodeTxt(vol, 'pesoB'));
-      Model.Quantidade := Round(ToFloat(NodeTxt(vol, 'qVol')));
-    end;
-
-    Model.IDOS := OSID;
+    Model := FService.ImportarNFeDeXML(AArquivo, OSID);
     FNFes.Add(Model);
 
     TNotificacao.Sucesso(Self,
@@ -805,15 +662,14 @@ begin
     AtualizarTotaisNFe;
 
   except
+    on E: EXMLNFeInvalido do
+      TNotificacao.Erro(Self, E.Message);
     on E: Exception do
       TNotificacao.Erro(Self, 'Erro ao importar XML: ' + E.Message);
   end;
 end;
 
-// ─── ColetarCampos — tela → Model ────────────────────────────────────────────
 function TEmissaoOS.ColetarCampos: TOrdemServicoModel;
-var
-  IDTom: Integer;
 begin
   Result               := TOrdemServicoModel.Novo;
   Result.ID            := OSID;
@@ -848,19 +704,13 @@ begin
                              StringReplace(edtValNF.Text, ',', '.', [rfReplaceAll]), 0);
 
   // Tomador: Remetente, Destinatário ou Terceiro
-  case Result.TipoTomador of
-    OS_TOMADOR_REMETENTE   : IDTom := Result.IDRemetente;
-    OS_TOMADOR_DESTINATARIO: IDTom := Result.IDDestinatario;
-    OS_TOMADOR_TERCEIRO    : IDTom := IDDaCombo(cboTomador, FIDsClientes);
-  else IDTom := 0;
-  end;
-  Result.IDTomador := IDTom;
+  Result.IDTomador := FService.ResolverTomador(
+    Result, IDDaCombo(cboTomador, FIDsClientes));
 end;
 
-// ─── Cálculos de ICMS ─────────────────────────────────────────────────────────
 procedure TEmissaoOS.edtBaseICMSChange(Sender: TObject);
 begin
-  FBaseICMSAutoPreenchida := False; // usuário editou — não sobrescreve mais
+  FBaseICMSAutoPreenchida := False;
   RecalcularICMS;
 end;
 
@@ -880,7 +730,6 @@ begin
     Numero := FService.Salvar(AOS, FNFes);
     OSID   := AOS.ID;
     lblNumOS.Caption := 'OS Nº ' + Numero.ToString.PadLeft(4, '0');
-    TNotificacao.Sucesso(Self, 'OS salva com sucesso!');
     ModalResult := mrOk;
   except
     on E: Exception do

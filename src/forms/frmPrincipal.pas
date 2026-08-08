@@ -27,8 +27,6 @@ type
     procedure mnuCadFrotaClick(Sender: TObject);
     procedure mnuCadRotasClick(Sender: TObject);
     procedure mnuMovOSClick(Sender: TObject);
-    procedure mnuRelOSPeriodoClick(Sender: TObject);
-    procedure mnuRelOSClienteClick(Sender: TObject);
 
   private
     procedure AbrirForm(AFormClass: TFormClass);
@@ -104,21 +102,10 @@ begin
   AbrirForm(TRotas);
 end;
 
-// Movimento
+// Emissao
 procedure TPrincipal.mnuMovOSClick(Sender: TObject);
 begin
   AbrirForm(TOS);
-end;
-
-// Relatórios
-procedure TPrincipal.mnuRelOSPeriodoClick(Sender: TObject);
-begin
-  TNotificacao.Info(Self, 'Relatórios em desenvolvimento.');
-end;
-
-procedure TPrincipal.mnuRelOSClienteClick(Sender: TObject);
-begin
-  TNotificacao.Info(Self, 'Relatórios em desenvolvimento.');
 end;
 
 end.

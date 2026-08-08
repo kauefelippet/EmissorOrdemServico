@@ -4,14 +4,28 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, System.StrUtils,
+  Xml.XMLIntf, Xml.XMLDoc,
   FireDAC.Comp.Client,
   uOSModel, uOSNFeModel, uOSRepository, dmConexao,
-  uRotaModel;
+  uRotaModel, uRotaRepository, uFormatacao;
 
 type
+  // XML de NF-e que não pôde ser interpretado
+  EXMLNFeInvalido = class(Exception);
+
+  // Item de lista para preenchimento de ComboBoxes (ID + texto exibido)
+  TLookupItem = record
+    ID       : Integer;
+    Descricao: string;
+
+    class function Novo(const AID: Integer;
+                        const ADescricao: string): TLookupItem; static;
+  end;
+
   TOSService = class
   private
-    FRepo: TOSRepository;
+    FRepo    : TOSRepository;
+    FRotaRepo: TRotaRepository;
   public
     constructor Create;
     destructor Destroy; override;
@@ -25,10 +39,35 @@ type
     procedure CarregarFrota(AQuery: TFDQuery);
     procedure CarregarRotas(AQuery: TFDQuery);
 
+    function ListarClientesLookup: TList<TLookupItem>;
+    function ListarFrotaLookup: TList<TLookupItem>;
+    function ListarRotasLookup: TList<TLookupItem>;
+
+    function BuscarRota(const AID: Integer): TRotaModel;
+
+    // Regras de preenchimento
+    function RotaExigeKM(const ARota: TRotaModel): Boolean;
+    function ExigeTomadorTerceiro(const ATipoTomador: Integer): Boolean;
+    function ResolverTomador(const AOS: TOrdemServicoModel;
+                             const AIDTerceiro: Integer): Integer;
+
     // Cálculos
     function CalcularFrete(const ARota: TRotaModel;
                            APeso, AQtd, AValorNF, AKM: Double): Double;
     function CalcularICMS(ABase, AAliquota: Double): Double;
+
+    // Retorna True quando o frete deve ser reescrito automaticamente
+    function CalcularFreteAutomatico(const ARota: TRotaModel;
+                                     APeso, AQtd, AValorNF, AKM: Double;
+                                     const AFreteManual: Boolean;
+                                     out AFrete: Double): Boolean;
+
+    // Retorna True quando a base de ICMS deve acompanhar o frete calculado
+    function CalcularBaseICMSAutomatica(const AFrete: Double;
+                                        const ABaseICMSInformada,
+                                              ABaseICMSAutoPreenchida: Boolean;
+                                        out ABaseICMS: Double): Boolean;
+
     procedure RecalcularTotaisNFe(var AOS: TOrdemServicoModel;
                                   const ANFes: TList<TOSNFeModel>);
 
@@ -42,17 +81,28 @@ type
     // NF-e
     procedure AdicionarNFe(const ANFe: TOSNFeModel);
     procedure RemoverNFe(const AID: Integer);
+    function  ImportarNFeDeXML(const AArquivo: string;
+                               const AIDOS: Integer): TOSNFeModel;
   end;
 
 implementation
 
+class function TLookupItem.Novo(const AID: Integer;
+  const ADescricao: string): TLookupItem;
+begin
+  Result.ID        := AID;
+  Result.Descricao := ADescricao;
+end;
+
 constructor TOSService.Create;
 begin
-  FRepo := TOSRepository.Create;
+  FRepo     := TOSRepository.Create;
+  FRotaRepo := TRotaRepository.Create;
 end;
 
 destructor TOSService.Destroy;
 begin
+  FRotaRepo.Free;
   FRepo.Free;
   inherited;
 end;
@@ -87,7 +137,101 @@ begin
   FRepo.CarregarRotas(AQuery);
 end;
 
-// ─── CalcularFrete ────────────────────────────────────────────────────────────
+// ─── Lookups tipados — o Form não precisa conhecer TFDQuery ──────────────────
+function TOSService.ListarClientesLookup: TList<TLookupItem>;
+var
+  qry: TFDQuery;
+begin
+  Result := TList<TLookupItem>.Create;
+  qry    := TFDQuery.Create(nil);
+  try
+    FRepo.CarregarClientes(qry);
+    qry.First;
+    while not qry.Eof do
+    begin
+      Result.Add(TLookupItem.Novo(
+        qry.FieldByName('ID').AsInteger,
+        qry.FieldByName('RAZAO_SOCIAL').AsString));
+      qry.Next;
+    end;
+  finally
+    qry.Free;
+  end;
+end;
+
+function TOSService.ListarFrotaLookup: TList<TLookupItem>;
+var
+  qry: TFDQuery;
+begin
+  Result := TList<TLookupItem>.Create;
+  qry    := TFDQuery.Create(nil);
+  try
+    FRepo.CarregarFrota(qry);
+    qry.First;
+    while not qry.Eof do
+    begin
+      Result.Add(TLookupItem.Novo(
+        qry.FieldByName('ID').AsInteger,
+        TFormatacao.FormatarPlaca(qry.FieldByName('PLACA').AsString) +
+        ' — ' + qry.FieldByName('DESCRICAO').AsString));
+      qry.Next;
+    end;
+  finally
+    qry.Free;
+  end;
+end;
+
+function TOSService.ListarRotasLookup: TList<TLookupItem>;
+var
+  qry: TFDQuery;
+begin
+  Result := TList<TLookupItem>.Create;
+  qry    := TFDQuery.Create(nil);
+  try
+    FRepo.CarregarRotas(qry);
+    qry.First;
+    while not qry.Eof do
+    begin
+      Result.Add(TLookupItem.Novo(
+        qry.FieldByName('ID').AsInteger,
+        qry.FieldByName('DESCRICAO').AsString));
+      qry.Next;
+    end;
+  finally
+    qry.Free;
+  end;
+end;
+
+function TOSService.BuscarRota(const AID: Integer): TRotaModel;
+begin
+  if AID = 0 then
+    Result := TRotaModel.Novo
+  else
+    Result := FRotaRepo.BuscarPorID(AID);
+end;
+
+// ─── Regras de preenchimento ──────────────────────────────────────────────────
+function TOSService.RotaExigeKM(const ARota: TRotaModel): Boolean;
+begin
+  Result := ARota.TipoCalculo = TIPO_KM;
+end;
+
+function TOSService.ExigeTomadorTerceiro(const ATipoTomador: Integer): Boolean;
+begin
+  Result := ATipoTomador = OS_TOMADOR_TERCEIRO;
+end;
+
+function TOSService.ResolverTomador(const AOS: TOrdemServicoModel;
+  const AIDTerceiro: Integer): Integer;
+begin
+  case AOS.TipoTomador of
+    OS_TOMADOR_REMETENTE   : Result := AOS.IDRemetente;
+    OS_TOMADOR_DESTINATARIO: Result := AOS.IDDestinatario;
+    OS_TOMADOR_TERCEIRO    : Result := AIDTerceiro;
+  else Result := 0;
+  end;
+end;
+
 function TOSService.CalcularFrete(const ARota: TRotaModel;
   APeso, AQtd, AValorNF, AKM: Double): Double;
 var
@@ -98,27 +242,22 @@ begin
   case IndexStr(ARota.TipoCalculo,
     [TIPO_FIXO, TIPO_KM, TIPO_PESO, TIPO_VOLUME, TIPO_VALOR_NF]) of
 
-    0: // FIXO — usa só o valor base, sem multiplicador
+    0:
       begin
         Result := ARota.ValorBase;
-        Exit; // sai direto, sem somar ValorBase de novo abaixo
+        Exit;
       end;
 
-    1: // POR_KM — R$ por KM rodado
-       // Ex: R$ 2,50/KM × 150 KM = R$ 375,00
+    1:
       ValorVariavel := ARota.Multiplicador * AKM;
 
-    2: // POR_PESO — R$ por KG
-       // Ex: R$ 0,08/KG × 18.600 KG = R$ 1.488,00
+    2:
       ValorVariavel := ARota.Multiplicador * APeso;
 
-    3: // POR_VOLUME — R$ por unidade/volume
-       // Ex: R$ 12,00/vol × 23 vol = R$ 276,00
+    3:
       ValorVariavel := ARota.Multiplicador * AQtd;
 
-    4: // POR_VALOR — % sobre o valor da NF-e
-       // Multiplicador é PERCENTUAL: entrar 5 = 5% do valor da NF
-       // Ex: 5% × R$ 62.312,82 = R$ 3.115,64
+    4:
       ValorVariavel := AValorNF * (ARota.Multiplicador / 100);
 
   else
@@ -126,12 +265,9 @@ begin
     Exit;
   end;
 
-  // Para tipos variáveis, soma o valor base adicional se houver
-  // (campo opcional no cadastro de rota)
   Result := ValorVariavel + ARota.ValorBase;
 end;
 
-// ─── CalcularICMS ─────────────────────────────────────────────────────────────
 function TOSService.CalcularICMS(ABase, AAliquota: Double): Double;
 begin
   if (ABase <= 0) or (AAliquota <= 0) then
@@ -140,7 +276,32 @@ begin
     Result := ABase * (AAliquota / 100);
 end;
 
-// ─── RecalcularTotaisNFe — soma Peso, Qtd e ValorNF das NF-es ─────────────────
+function TOSService.CalcularFreteAutomatico(const ARota: TRotaModel;
+  APeso, AQtd, AValorNF, AKM: Double; const AFreteManual: Boolean;
+  out AFrete: Double): Boolean;
+begin
+  AFrete := 0;
+
+  // Sem rota definida não há como calcular
+  if ARota.ID = 0 then
+    Exit(False);
+
+  // Se o usuário editou manualmente, o valor não é sobrescrito
+  if AFreteManual then
+    Exit(False);
+
+  AFrete := CalcularFrete(ARota, APeso, AQtd, AValorNF, AKM);
+  Result := True;
+end;
+
+function TOSService.CalcularBaseICMSAutomatica(const AFrete: Double;
+  const ABaseICMSInformada, ABaseICMSAutoPreenchida: Boolean;
+  out ABaseICMS: Double): Boolean;
+begin
+  ABaseICMS := AFrete;
+  Result    := (not ABaseICMSInformada) or ABaseICMSAutoPreenchida;
+end;
+
 procedure TOSService.RecalcularTotaisNFe(var AOS: TOrdemServicoModel;
   const ANFes: TList<TOSNFeModel>);
 var
@@ -158,13 +319,11 @@ begin
   end;
 end;
 
-// ─── Salvar ───────────────────────────────────────────────────────────────────
 function TOSService.Salvar(var AOS: TOrdemServicoModel;
   const ANFes: TList<TOSNFeModel>): Integer;
 var
   NFe: TOSNFeModel;
 begin
-  // Validações
   if AOS.IDRemetente = 0 then
     raise Exception.Create('Remetente é obrigatório.');
 
@@ -180,7 +339,6 @@ begin
   if AOS.IDRota = 0 then
     raise Exception.Create('Rota é obrigatória.');
 
-  // Garante status inicial
   if AOS.Status = '' then
     AOS.Status := OS_STATUS_ABERTA;
 
@@ -189,10 +347,8 @@ begin
     Result := FRepo.Inserir(AOS);
     AOS.Numero := Result;
 
-    // Salva NF-es vinculadas à OS recém-criada
     if Result > 0 then
     begin
-      // Busca o ID real da OS inserida
       var qryID := TFDQuery.Create(nil);
       try
         qryID.Connection := Conexao.Conexao;
@@ -217,7 +373,6 @@ begin
   else
   begin
     FRepo.Atualizar(AOS);
-    // Regrava todas as NF-es (exclui e reinsere)
     FRepo.ExcluirNFesDaOS(AOS.ID);
     for NFe in ANFes do
     begin
@@ -229,7 +384,6 @@ begin
   end;
 end;
 
-// ─── Emitir ───────────────────────────────────────────────────────────────────
 procedure TOSService.Emitir(const AID: Integer);
 var
   OS: TOrdemServicoModel;
@@ -241,7 +395,6 @@ begin
   FRepo.AtualizarStatus(AID, OS_STATUS_EMITIDA);
 end;
 
-// ─── Cancelar ─────────────────────────────────────────────────────────────────
 procedure TOSService.Cancelar(const AID: Integer);
 var
   OS: TOrdemServicoModel;
@@ -252,7 +405,6 @@ begin
   FRepo.AtualizarStatus(AID, OS_STATUS_CANCELADA);
 end;
 
-// ─── Excluir ──────────────────────────────────────────────────────────────────
 procedure TOSService.Excluir(const AID: Integer; const ANumero: Integer);
 var
   OS: TOrdemServicoModel;
@@ -273,6 +425,90 @@ end;
 procedure TOSService.RemoverNFe(const AID: Integer);
 begin
   FRepo.ExcluirNFe(AID);
+end;
+
+// ─── ImportarNFeDeXML — lê tags da NF-e e devolve um TOSNFeModel ─────────────
+function TOSService.ImportarNFeDeXML(const AArquivo: string;
+  const AIDOS: Integer): TOSNFeModel;
+var
+  XML: IXMLDocument;
+
+  function BuscarNo(ANode: IXMLNode; const ATag: string): IXMLNode;
+  var
+    I   : Integer;
+    Nome: string;
+    Sub : IXMLNode;
+  begin
+    Result := nil;
+    if ANode = nil then Exit;
+
+    for I := 0 to ANode.ChildNodes.Count - 1 do
+    begin
+      Sub  := ANode.ChildNodes[I];
+      Nome := Sub.LocalName;
+      if SameText(Nome, ATag) then
+      begin
+        Result := Sub;
+        Exit;
+      end;
+      // Busca nos filhos recursivamente
+      Result := BuscarNo(Sub, ATag);
+      if Result <> nil then Exit;
+    end;
+  end;
+
+  function NodeTxt(ANode: IXMLNode; const ATag: string): string;
+  var N: IXMLNode;
+  begin
+    Result := '';
+    N := BuscarNo(ANode, ATag);
+    if N <> nil then Result := Trim(N.Text);
+  end;
+
+  function ToFloat(const S: string): Double;
+  begin
+    Result := StrToFloatDef(S, 0, TFormatSettings.Invariant);
+  end;
+
+begin
+  Result := TOSNFeModel.Novo;
+
+  XML := TXMLDocument.Create(nil);
+  XML.Options := XML.Options + [doNodeAutoCreate];
+  XML.LoadFromFile(AArquivo);
+  XML.Active  := True;
+
+  var Root   := XML.DocumentElement;
+  var infNFe := BuscarNo(Root, 'infNFe');
+
+  if infNFe = nil then
+    raise EXMLNFeInvalido.Create('XML inválido: nó infNFe não encontrado.');
+
+  Result.NumeroNFe := NodeTxt(infNFe, 'nNF');
+  Result.Serie     := NodeTxt(infNFe, 'serie');
+
+  var sChave := '';
+  if infNFe.HasAttribute('Id') then
+    sChave := infNFe.Attributes['Id'];
+  Result.ChaveNFe := StringReplace(sChave, 'NFe', '', [rfReplaceAll]);
+
+  var emit := BuscarNo(infNFe, 'emit');
+  if emit <> nil then
+    Result.Emitente := NodeTxt(emit, 'xNome');
+
+  var total := BuscarNo(infNFe, 'total');
+  if total <> nil then
+    Result.ValorMercadoria := ToFloat(NodeTxt(total, 'vNFTot'));
+
+  var transp := BuscarNo(infNFe, 'transp');
+  var vol    := BuscarNo(transp,  'vol');
+  if vol <> nil then
+  begin
+    Result.Peso       := ToFloat(NodeTxt(vol, 'pesoB'));
+    Result.Quantidade := Round(ToFloat(NodeTxt(vol, 'qVol')));
+  end;
+
+  Result.IDOS := AIDOS;
 end;
 
 end.

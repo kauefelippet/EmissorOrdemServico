@@ -167,8 +167,13 @@ begin
   frmEmissao := TEmissaoOS.Create(Self);
   try
     frmEmissao.OSID := AOSID;
-    if frmEmissao.ShowModal = mrOk then
+    if frmEmissao.ShowModal = mrCancel then
+      TNotificacao.Aviso(Self, 'Ordem de Serviço não salva.')
+    else if frmEmissao.ShowModal = mrOk then
+    begin
       CarregarOS(edtBusca.Text);
+      TNotificacao.Sucesso(Self, 'Ordem de Serviço salva com sucesso!');
+    end;
   finally
     frmEmissao.Free;
   end;

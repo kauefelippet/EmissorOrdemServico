@@ -58,11 +58,9 @@ begin
   if Trim(ARota.TipoCalculo) = '' then
     raise Exception.Create('Tipo de cálculo é obrigatório.');
 
-  // FIXO exige VALOR_BASE pois é o valor final do frete
   if (ARota.TipoCalculo = TIPO_FIXO) and (ARota.ValorBase <= 0) then
     raise Exception.Create('Rota do tipo Fixo requer um Valor Base maior que zero.');
 
-  // Tipos com multiplicador exigem o valor preenchido
   if ARota.UsaMultiplicador and (ARota.Multiplicador <= 0) then
     raise Exception.Create(
       'O tipo "' + ARota.TipoDescricao + '" requer o Multiplicador preenchido.');

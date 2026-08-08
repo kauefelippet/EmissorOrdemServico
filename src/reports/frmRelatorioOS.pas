@@ -163,7 +163,7 @@ type
     procedure FormatarCamposNumericos;
     procedure PrepararDados(const AOSID: Integer);
   public
-    procedure Imprimir(const AOSID: Integer; const ALogoPath: string = '');
+    procedure Imprimir(const AOSID: Integer; const ALogoPath: string = 'D:\Projects\EmissorOrdemServico\src\images\Logo.jpg');
     procedure ExportarPDF(const AOSID: Integer; const ACaminho: string);
   end;
 
@@ -209,14 +209,11 @@ end;
 
 procedure TRelatorioOS.btSummaryBeforePrint(Sender: TObject; var PrintIt: Boolean);
 begin
-  // TRUQUE DE MESTRE: O Fortes avança para o EOF após imprimir os detalhes.
-  // Isso faz com que os Totais e a Observação fiquem em branco.
-  // Esta linha puxa o cursor da OS de volta para os dados, garantindo a impressão perfeita!
   if not qryOS.IsEmpty and qryOS.Eof then
     qryOS.First;
 end;
 
-procedure TRelatorioOS.Imprimir(const AOSID: Integer; const ALogoPath: string = '');
+procedure TRelatorioOS.Imprimir(const AOSID: Integer; const ALogoPath: string = 'D:\Projects\EmissorOrdemServico\src\images\Logo.jpg');
 begin
   PrepararDados(AOSID);
 
