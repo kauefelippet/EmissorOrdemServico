@@ -30,10 +30,10 @@ object RelatorioOS: TRelatorioOS
       Height = 105
       BandType = btHeader
       object imgLogo: TRLImage
-        Left = 0
-        Top = 8
-        Width = 110
-        Height = 60
+        Left = 2
+        Top = 3
+        Width = 118
+        Height = 96
         Picture.Data = {
           0A544A504547496D616765C3510000FFD8FFE000104A46494600010100000100
           010000FFDB004300030202020202030202020303030304060404040404080606
@@ -690,6 +690,7 @@ object RelatorioOS: TRelatorioOS
           0404040404040404040404040404040404040404040404040404040404040404
           0404040404040404040404040404040404040404040404040404040404040404
           0404040404040404040404040404041FFFD9}
+        Scaled = True
       end
       object lblTitulo: TRLLabel
         Left = 118

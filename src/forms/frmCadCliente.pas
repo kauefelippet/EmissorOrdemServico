@@ -87,7 +87,6 @@ begin
   lblCriadoEm.Caption   := '';
   lblAtualizadoEm.Caption := '';
 
-  // Atalhos de teclado
   KeyPreview         := True;
   btnSalvar.Default  := True;
   btnCancelar.Cancel := True;
@@ -117,7 +116,6 @@ begin
   end;
 end;
 
-// Preenche campos com formatacao para exibicao
 procedure TCadCliente.PreencherCampos(const ACliente: TClienteModel);
 begin
   edtDocumento.Text    := TFormatacao.FormatarDocumento(ACliente.Documento);
@@ -134,7 +132,6 @@ begin
   edtDocumentoChange(nil);
 end;
 
-// Manda campos visuais para Model
 function TCadCliente.ColetarCampos: TClienteModel;
 begin
   Result              := TClienteModel.Novo;
@@ -151,7 +148,6 @@ begin
   Result.UF           := cboUF.Text;
 end;
 
-// Detecta CPF ou CNPJ enquanto digita
 procedure TCadCliente.edtDocumentoChange(Sender: TObject);
 var
   Tipo   : string;
@@ -174,14 +170,12 @@ begin
   end;
 end;
 
-// Só aceita dígitos e Backspace no campo CEP
 procedure TCadCliente.edtCEPKeyPress(Sender: TObject; var Key: Char);
 begin
   if not (Key.IsDigit or (Key = #8)) then
     Key := #0;
 end;
 
-// Callback do BuscarCEP
 procedure TCadCliente.AplicarEndereco(AEndereco: TEnderecoModel;
                                        AErro: string);
 begin
@@ -195,7 +189,6 @@ begin
     Exit;
   end;
 
-  // Preenche os campos de endereço com o retorno da API
   edtLogradouro.Text := AEndereco.Logradouro;
   edtBairro.Text     := AEndereco.Bairro;
   edtCidade.Text     := AEndereco.Cidade;

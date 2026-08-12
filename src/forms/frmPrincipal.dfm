@@ -35,6 +35,69 @@ object Principal: TPrincipal
       Caption = 'lblStatus'
     end
   end
+  object grpConfig: TGroupBox
+    Left = 16
+    Top = 16
+    Width = 592
+    Height = 137
+    Caption = 'Configura'#231#245'es'
+    TabOrder = 1
+    object lblDatabase: TLabel
+      Left = 16
+      Top = 24
+      Width = 119
+      Height = 15
+      Caption = 'Banco de dados (FDB):'
+    end
+    object lblLogo: TLabel
+      Left = 16
+      Top = 76
+      Width = 103
+      Height = 15
+      Caption = 'Logo para relat'#243'rio:'
+    end
+    object edtDatabase: TEdit
+      Left = 16
+      Top = 44
+      Width = 470
+      Height = 23
+      TabOrder = 0
+    end
+    object btnSelDatabase: TButton
+      Left = 496
+      Top = 43
+      Width = 75
+      Height = 25
+      Caption = 'Procurar...'
+      TabOrder = 1
+      OnClick = btnSelDatabaseClick
+    end
+    object edtLogo: TEdit
+      Left = 16
+      Top = 96
+      Width = 470
+      Height = 23
+      TabOrder = 2
+    end
+    object btnSelLogo: TButton
+      Left = 496
+      Top = 95
+      Width = 75
+      Height = 25
+      Caption = 'Procurar...'
+      TabOrder = 3
+      OnClick = btnSelLogoClick
+    end
+    object btnSalvarConfig: TButton
+      Left = 496
+      Top = 13
+      Width = 75
+      Height = 25
+      Caption = 'Salvar'
+      TabOrder = 4
+      OnClick = btnSalvarConfigClick
+    end
+  end
   object mnuPrincipal: TMainMenu
     object mnuCadastros: TMenuItem
       Caption = 'Cadastros'

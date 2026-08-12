@@ -1,4 +1,4 @@
-unit frmOS;
+ï»¿unit frmOS;
 
 interface
 
@@ -10,7 +10,7 @@ uses
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.Comp.DataSet,
   uOSModel, uOSService, uNotificacao, frmRelatorioOS,
-  frmEmissaoOS;
+  frmEmissaoOS, dmConexao;
 
 type
   TOS = class(TForm)
@@ -81,7 +81,7 @@ begin
 
   with gridOS.Columns.Add do
   begin
-    FieldName := 'NUMERO'; Title.Caption := 'Nº OS';
+    FieldName := 'NUMERO'; Title.Caption := 'Nï¿½ OS';
     Width := 70; ReadOnly := True;
   end;
   with gridOS.Columns.Add do
@@ -101,7 +101,7 @@ begin
   end;
   with gridOS.Columns.Add do
   begin
-    FieldName := 'DESTINATARIO'; Title.Caption := 'Destinatário';
+    FieldName := 'DESTINATARIO'; Title.Caption := 'Destinatï¿½rio';
     Width := 230; ReadOnly := True;
   end;
   with gridOS.Columns.Add do
@@ -167,13 +167,13 @@ begin
   frmEmissao := TEmissaoOS.Create(Self);
   try
     frmEmissao.OSID := AOSID;
-    if frmEmissao.ShowModal = mrCancel then
-      TNotificacao.Aviso(Self, 'Ordem de Serviço não salva.')
-    else if frmEmissao.ShowModal = mrOk then
+    if frmEmissao.ShowModal = mrOk then
     begin
       CarregarOS(edtBusca.Text);
-      TNotificacao.Sucesso(Self, 'Ordem de Serviço salva com sucesso!');
-    end;
+      TNotificacao.Sucesso(Self, 'Ordem de ServiÃ§o salva com sucesso!');
+    end
+    else
+      TNotificacao.Aviso(Self, 'Ordem de ServiÃ§o nÃ£o salva.');
   finally
     frmEmissao.Free;
   end;
@@ -207,7 +207,7 @@ begin
   Rel := TRelatorioOS.Create(Self);
   try
     Rel.Imprimir(qryOS.FieldByName('ID').AsInteger,
-                 ExtractFilePath(Application.ExeName) + 'logo.png');
+                 Conexao.ConfigINI.LogoPath);
   finally
     Rel.Free;
   end;
@@ -238,14 +238,14 @@ begin
   nID  := qryOS.FieldByName('ID').AsInteger;
   nNum := qryOS.FieldByName('NUMERO').AsInteger;
 
-  if MessageDlg('Excluir a OS nº ' + nNum.ToString + '?' + sLineBreak +
-                'Esta ação não pode ser desfeita.',
+  if MessageDlg('Excluir a OS nï¿½ ' + nNum.ToString + '?' + sLineBreak +
+                'Esta aï¿½ï¿½o nï¿½o pode ser desfeita.',
                 mtWarning, [mbYes, mbNo], 0) = mrYes then
   begin
     try
       FService.Excluir(nID, nNum);
       CarregarOS(edtBusca.Text);
-      TNotificacao.Sucesso(Self, 'OS excluída com sucesso.');
+      TNotificacao.Sucesso(Self, 'OS excluï¿½da com sucesso.');
     except
       on E: Exception do TNotificacao.Erro(Self, E.Message);
     end;

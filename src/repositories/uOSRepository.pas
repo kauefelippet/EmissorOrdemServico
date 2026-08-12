@@ -15,7 +15,7 @@ type
     // OS
     procedure Listar(AQuery: TFDQuery; const AFiltro: string);
     function  BuscarPorID(const AID: Integer): TOrdemServicoModel;
-    function  Inserir(const AOS: TOrdemServicoModel): Integer;
+    procedure Inserir(var AOS: TOrdemServicoModel);
     procedure Atualizar(const AOS: TOrdemServicoModel);
     procedure AtualizarStatus(const AID: Integer; const AStatus: string);
     procedure Excluir(const AID: Integer);
@@ -147,17 +147,17 @@ begin
   end;
 end;
 
-// ─── Inserir OS — retorna o NUMERO gerado ─────────────────────────────────────
-function TOSRepository.Inserir(const AOS: TOrdemServicoModel): Integer;
+// ─── Inserir OS — retorna o NUMERO gerado e ja preenche o ID ──────────────────
+procedure TOSRepository.Inserir(var AOS: TOrdemServicoModel);
 var
   qry: TFDQuery;
 begin
-  Result := 0;
-  qry    := TFDQuery.Create(nil);
+  qry := TFDQuery.Create(nil);
   try
     qry.Connection := Conn;
 
-    // INSERT retornando o NUMERO gerado pelo trigger via RETURNING
+    // INSERT retornando NUMERO e ID gerados pelo trigger via RETURNING.
+    // RETURNING retorna ambas as colunas em um unico comando — sem segunda query.
     qry.SQL.Text :=
       'INSERT INTO ORDEM_SERVICO ' +
       '  (DATA, STATUS, ID_REMETENTE, ID_DESTINATARIO, ID_TOMADOR, ' +
@@ -171,7 +171,7 @@ begin
       '   :pPeso, :pQtd, :pValNF, ' +
       '   :pFrete, :pSeguro, :pBase, :pAliq, :pICMS, ' +
       '   :pObs) ' +
-      'RETURNING NUMERO';
+      'RETURNING NUMERO, ID';
 
     qry.ParamByName('pData').AsDateTime   := AOS.Data;
     qry.ParamByName('pStatus').AsString   := AOS.Status;
@@ -196,7 +196,10 @@ begin
 
     qry.Open; // RETURNING precisa de Open, não ExecSQL
     if not qry.IsEmpty then
-      Result := qry.Fields[0].AsInteger;
+    begin
+      AOS.Numero := qry.FieldByName('NUMERO').AsInteger;
+      AOS.ID     := qry.FieldByName('ID').AsInteger;
+    end;
   finally
     qry.Free;
   end;

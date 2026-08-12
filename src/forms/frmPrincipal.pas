@@ -21,15 +21,28 @@ type
     lblUsuario: TLabel;
     pnlStatus: TPanel;
     lblStatus: TLabel;
+    // Configuracoes
+    grpConfig: TGroupBox;
+    lblDatabase: TLabel;
+    edtDatabase: TEdit;
+    btnSelDatabase: TButton;
+    lblLogo: TLabel;
+    edtLogo: TEdit;
+    btnSelLogo: TButton;
+    btnSalvarConfig: TButton;
 
     procedure FormCreate(Sender: TObject);
     procedure mnuCadClientesClick(Sender: TObject);
     procedure mnuCadFrotaClick(Sender: TObject);
     procedure mnuCadRotasClick(Sender: TObject);
     procedure mnuMovOSClick(Sender: TObject);
+    procedure btnSelDatabaseClick(Sender: TObject);
+    procedure btnSelLogoClick(Sender: TObject);
+    procedure btnSalvarConfigClick(Sender: TObject);
 
   private
     procedure AbrirForm(AFormClass: TFormClass);
+    procedure CarregarConfig;
   end;
 
 var
@@ -43,7 +56,8 @@ uses
   frmClientes,
   frmFrota,
   frmRotas,
-  frmOS;
+  frmOS,
+  dmConexao;
 
 procedure TPrincipal.FormCreate(Sender: TObject);
 begin
@@ -65,6 +79,14 @@ begin
   lblUsuario.Anchors   := [akTop, akRight];
 
   WindowState := wsMaximized;
+
+  CarregarConfig;
+end;
+
+procedure TPrincipal.CarregarConfig;
+begin
+  edtDatabase.Text := Conexao.ConfigINI.DatabasePath;
+  edtLogo.Text     := Conexao.ConfigINI.LogoPath;
 end;
 
 procedure TPrincipal.AbrirForm(AFormClass: TFormClass);
@@ -106,6 +128,44 @@ end;
 procedure TPrincipal.mnuMovOSClick(Sender: TObject);
 begin
   AbrirForm(TOS);
+end;
+
+procedure TPrincipal.btnSelDatabaseClick(Sender: TObject);
+var
+  Path: string;
+begin
+  if Conexao.ConfigINI.SelecionarArquivo(Self, 'Selecionar banco de dados',
+       'Firebird (*.fdb)|*.fdb|Todos (*.*)|*.*', Path) then
+    edtDatabase.Text := Path;
+end;
+
+procedure TPrincipal.btnSelLogoClick(Sender: TObject);
+var
+  Path: string;
+begin
+  if Conexao.ConfigINI.SelecionarImagem(Self, Path) then
+    edtLogo.Text := Path;
+end;
+
+procedure TPrincipal.btnSalvarConfigClick(Sender: TObject);
+begin
+  // Validacao simples antes de persistir
+  if (Trim(edtDatabase.Text) <> '') and not FileExists(edtDatabase.Text) then
+  begin
+    TNotificacao.Aviso(Self, 'Arquivo de banco de dados não encontrado.');
+    Exit;
+  end;
+
+  if (Trim(edtLogo.Text) <> '') and not FileExists(edtLogo.Text) then
+  begin
+    TNotificacao.Aviso(Self, 'Arquivo de logo não encontrado.');
+    Exit;
+  end;
+
+  Conexao.ConfigINI.DatabasePath(edtDatabase.Text);
+  Conexao.ConfigINI.LogoPath(edtLogo.Text);
+
+  TNotificacao.Sucesso(Self, 'Configurações salvas com sucesso!');
 end;
 
 end.

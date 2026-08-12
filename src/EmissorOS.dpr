@@ -28,6 +28,7 @@ uses
   uOSModel in 'models\uOSModel.pas',
   uOSRepository in 'repositories\uOSRepository.pas',
   uOSService in 'services\uOSService.pas',
+  uConfigINI in 'shared\uConfigINI.pas',
   frmOS in 'forms\frmOS.pas' {OS},
   frmEmissaoOS in 'forms\frmEmissaoOS.pas' {TEmissaoOS},
   frmRelatorioOS in 'reports\frmRelatorioOS.pas' {RelatorioOS};

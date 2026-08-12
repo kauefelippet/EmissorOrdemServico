@@ -163,7 +163,7 @@ type
     procedure FormatarCamposNumericos;
     procedure PrepararDados(const AOSID: Integer);
   public
-    procedure Imprimir(const AOSID: Integer; const ALogoPath: string = 'D:\Projects\EmissorOrdemServico\src\images\Logo.jpg');
+    procedure Imprimir(const AOSID: Integer; const ALogoPath: string = '');
     procedure ExportarPDF(const AOSID: Integer; const ACaminho: string);
   end;
 
@@ -213,7 +213,9 @@ begin
     qryOS.First;
 end;
 
-procedure TRelatorioOS.Imprimir(const AOSID: Integer; const ALogoPath: string = 'D:\Projects\EmissorOrdemServico\src\images\Logo.jpg');
+procedure TRelatorioOS.Imprimir(const AOSID: Integer; const ALogoPath: string = '');
+var
+  Logo: string;
 begin
   PrepararDados(AOSID);
 
@@ -223,10 +225,17 @@ begin
     Exit;
   end;
 
-  if (ALogoPath <> '') and FileExists(ALogoPath) then
+  // Resolve o caminho da logo: parametro > INI > caminho relativo ao executavel
+  Logo := ALogoPath;
+  if (Trim(Logo) = '') or not FileExists(Logo) then
+    Logo := Conexao.ConfigINI.LogoPath;
+  if (Trim(Logo) = '') or not FileExists(Logo) then
+    Logo := ExtractFilePath(Application.ExeName) + 'logo.png';
+
+  if (Trim(Logo) <> '') and FileExists(Logo) then
   begin
     imgLogo.Visible := True;
-    imgLogo.Picture.LoadFromFile(ALogoPath);
+    imgLogo.Picture.LoadFromFile(Logo);
   end
   else
     imgLogo.Visible := False;

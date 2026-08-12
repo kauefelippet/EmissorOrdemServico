@@ -112,11 +112,12 @@
     <File Path="services\uClienteService.pas"/>
     <File Path="services\uEnderecoService.pas"/>
     <File Path="services\uFrotaService.pas"/>
-    <File Path="services\uRotaService.pas"/>
     <File Path="services\uOSService.pas"/>
+    <File Path="services\uRotaService.pas"/>
     <File Path="shared"/>
     <File Path="shared\uFormatacao.pas"/>
-    <File Path="shared\uValidacoes.pas"/>
     <File Path="shared\uNotificacao.pas"/>
+    <File Path="shared\uValidacoes.pas"/>
+    <File Path="shared\uConfigINI.pas"/>
   </ProjectSortOrder>
 </BorlandProject>

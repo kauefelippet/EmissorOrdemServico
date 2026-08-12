@@ -344,24 +344,12 @@ begin
 
   if AOS.ID = 0 then
   begin
-    Result := FRepo.Inserir(AOS);
-    AOS.Numero := Result;
+    // Inserir ja retorna NUMERO e ID preenchidos em AOS via RETURNING
+    FRepo.Inserir(AOS);
+    Result := AOS.Numero;
 
-    if Result > 0 then
+    if AOS.ID > 0 then
     begin
-      var qryID := TFDQuery.Create(nil);
-      try
-        qryID.Connection := Conexao.Conexao;
-        qryID.SQL.Text :=
-          'SELECT ID FROM ORDEM_SERVICO WHERE NUMERO = :pNum';
-        qryID.ParamByName('pNum').AsInteger := Result;
-        qryID.Open;
-        if not qryID.IsEmpty then
-          AOS.ID := qryID.FieldByName('ID').AsInteger;
-      finally
-        qryID.Free;
-      end;
-
       for NFe in ANFes do
       begin
         var Temp := NFe;

@@ -8,7 +8,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
   Vcl.Grids, Vcl.ValEdit, Vcl.Dialogs,
   uOSModel, uOSNFeModel, uOSService,
-  uRotaModel, uNotificacao, frmRelatorioOS;
+  uRotaModel, uNotificacao, frmRelatorioOS, dmConexao;
 
 type
   TEmissaoOS = class(TForm)
@@ -785,8 +785,7 @@ end;
 
 procedure TEmissaoOS.btnImprimirClick(Sender: TObject);
 var
-  Rel     : TRelatorioOS;
-  LogoPath: string;
+  Rel: TRelatorioOS;
 begin
   if OSID = 0 then
   begin
@@ -794,12 +793,9 @@ begin
     Exit;
   end;
 
-  // Ajuste o caminho para sua logo
-  LogoPath := ExtractFilePath(Application.ExeName) + 'logo.png';
-
   Rel := TRelatorioOS.Create(Self);
   try
-    Rel.Imprimir(OSID, LogoPath);
+    Rel.Imprimir(OSID, Conexao.ConfigINI.LogoPath);
   finally
     Rel.Free;
   end;
