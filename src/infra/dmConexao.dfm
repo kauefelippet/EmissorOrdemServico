@@ -3,12 +3,8 @@ object Conexao: TConexao
   Width = 640
   object FDConnection1: TFDConnection
     Params.Strings = (
-      'Database=D:\Projects\EmissorOrdemServico\db\EMISSOROS.FDB'
       'User_Name=SYSDBA'
       'Password=1q2w3e4r'
-      'Protocol=TCPIP'
-      'Server=127.0.0.1'
-      'Port=3050'
       'CharacterSet=utF8'
       'DriverID=FB')
     Left = 40

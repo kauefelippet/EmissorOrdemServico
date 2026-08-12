@@ -7,7 +7,7 @@ uses
   FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
   FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Phys.FB,
   FireDAC.Phys.FBDef, FireDAC.VCLUI.Wait, Data.DB, FireDAC.Comp.Client,
-  FireDAC.Comp.UI, FireDAC.Phys.IBBase, uConfigINI;
+  FireDAC.Comp.UI, FireDAC.Phys.IBBase, Vcl.Forms, uConfigINI;
 
 type
   TConexao = class(TDataModule)
@@ -50,23 +50,37 @@ procedure TConexao.AplicarCaminhoBanco;
 var
   CaminhoBanco: string;
 begin
-  // Se houver um caminho configurado no INI, substitui o Database da conexao.
-  // Caso contrario, mantem o que estiver definido no DFM (fallback).
   CaminhoBanco := FConfigINI.DatabasePath;
-  if Trim(CaminhoBanco) <> '' then
-    FDConnection1.Params.Values['Database'] := CaminhoBanco;
+
+  if Trim(CaminhoBanco) = '' then
+  begin
+    CaminhoBanco :=
+      IncludeTrailingPathDelimiter(
+        ExtractFilePath(Application.ExeName)
+      ) + 'Dados\EMISSOROS.FDB';
+  end;
+
+  FDConnection1.Params.Values['Database'] := CaminhoBanco;
 end;
 
 function TConexao.Conexao: TFDConnection;
+var
+  CaminhoFBClient: string;
 begin
-  // Se n�o estiver conectado, aplica o caminho configurado e conecta
+  CaminhoFBClient :=
+    IncludeTrailingPathDelimiter(
+      ExtractFilePath(Application.ExeName)
+    ) + 'Firebird\fbclient.dll';
+
+  FDPhysFBDriverLink1.VendorLib := CaminhoFBClient;
+
   if not FDConnection1.Connected then
   begin
     AplicarCaminhoBanco;
     FDConnection1.Connected := True;
   end;
 
-  Result := FDConnection1; // retorna a conex�o ativa
+  Result := FDConnection1;
 end;
 
 end.
