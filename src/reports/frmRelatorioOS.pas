@@ -126,7 +126,6 @@ type
     qryNFePESO: TFMTBCDField;
     qryNFeQUANTIDADE: TBCDField;
     qryNFeVALOR_MERCADORIA: TFMTBCDField;
-
     qryOSID: TIntegerField;
     qryOSNUMERO: TIntegerField;
     qryOSSTATUS: TWideStringField;
@@ -135,6 +134,7 @@ type
     qryOSDATA_FMT: TWideStringField;
     qryOSVALOR_FRETE: TFMTBCDField;
     qryOSSEGURO: TFMTBCDField;
+    qryOSFRETE_SEM_SEGURO: TFMTBCDField;
     qryOSBASE_ICMS: TFMTBCDField;
     qryOSALIQUOTA: TCurrencyField;
     qryOSVALOR_ICMS: TFMTBCDField;
@@ -142,7 +142,6 @@ type
     qryOSQUANTIDADE: TIntegerField;
     qryOSVALOR_MERCADORIA: TFMTBCDField;
     qryOSKM_FMT: TWideStringField;
-    qryOSTOTAL_GERAL: TFMTBCDField;
     qryOSTOM_NOME: TWideStringField;
     qryOSTOM_DOC: TWideStringField;
     qryOSTOM_LOCAL: TWideStringField;
@@ -183,7 +182,7 @@ begin
   if Assigned(qryOSVALOR_ICMS) then qryOSVALOR_ICMS.DisplayFormat := 'R$ #,##0.00';
   if Assigned(qryOSPESO) then qryOSPESO.DisplayFormat := '#,##0.000';
   if Assigned(qryOSVALOR_MERCADORIA) then qryOSVALOR_MERCADORIA.DisplayFormat := 'R$ #,##0.00';
-  if Assigned(qryOSTOTAL_GERAL) then qryOSTOTAL_GERAL.DisplayFormat := 'R$ #,##0.00';
+  if Assigned(qryOSFRETE_SEM_SEGURO) then qryOSFRETE_SEM_SEGURO.DisplayFormat := 'R$ #,##0.00';
 
   if Assigned(qryNFePESO) then qryNFePESO.DisplayFormat := '#,##0.000';
   if Assigned(qryNFeQUANTIDADE) then qryNFeQUANTIDADE.DisplayFormat := '#,##0';
@@ -225,7 +224,6 @@ begin
     Exit;
   end;
 
-  // Resolve o caminho da logo: parametro > INI > caminho relativo ao executavel
   Logo := ALogoPath;
   if (Trim(Logo) = '') or not FileExists(Logo) then
     Logo := Conexao.ConfigINI.LogoPath;

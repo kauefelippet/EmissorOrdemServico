@@ -42,7 +42,7 @@ type
     Aliquota        : Double;
     ValorICMS       : Double;
     Observacoes     : string;
-    // Auxiliares para exibição
+    // Auxiliares para exibiï¿½ï¿½o
     NomeRemetente   : string;
     NomeDestinatario: string;
     NomeTomador     : string;

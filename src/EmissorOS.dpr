@@ -38,8 +38,8 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TPrincipal, Principal);
   Application.CreateForm(TConexao, Conexao);
+  Application.CreateForm(TPrincipal, Principal);
   Application.CreateForm(TFrota, Frota);
   Application.CreateForm(TCadFrota, CadFrota);
   Application.CreateForm(TRotas, Rotas);
@@ -48,8 +48,6 @@ begin
   Application.CreateForm(TEmissaoOS, EmissaoOS);
   Application.CreateForm(TClientes, Clientes);
   Application.CreateForm(TCadCliente, CadCliente);
-  Application.CreateForm(TOS, OS);
-  Application.CreateForm(TEmissaoOS, EmissaoOS);
   Application.CreateForm(TRelatorioOS, RelatorioOS);
   Application.Run;
 end.

@@ -81,7 +81,7 @@ begin
 
   with gridOS.Columns.Add do
   begin
-    FieldName := 'NUMERO'; Title.Caption := 'N� OS';
+    FieldName := 'NUMERO'; Title.Caption := 'Nº OS';
     Width := 70; ReadOnly := True;
   end;
   with gridOS.Columns.Add do
@@ -101,7 +101,7 @@ begin
   end;
   with gridOS.Columns.Add do
   begin
-    FieldName := 'DESTINATARIO'; Title.Caption := 'Destinat�rio';
+    FieldName := 'DESTINATARIO'; Title.Caption := 'Destinatário';
     Width := 230; ReadOnly := True;
   end;
   with gridOS.Columns.Add do
@@ -238,14 +238,14 @@ begin
   nID  := qryOS.FieldByName('ID').AsInteger;
   nNum := qryOS.FieldByName('NUMERO').AsInteger;
 
-  if MessageDlg('Excluir a OS n� ' + nNum.ToString + '?' + sLineBreak +
-                'Esta a��o n�o pode ser desfeita.',
+  if MessageDlg('Excluir a OS nº ' + nNum.ToString + '?' + sLineBreak +
+                'Esta ação não pode ser desfeita.',
                 mtWarning, [mbYes, mbNo], 0) = mrYes then
   begin
     try
       FService.Excluir(nID, nNum);
       CarregarOS(edtBusca.Text);
-      TNotificacao.Sucesso(Self, 'OS exclu�da com sucesso.');
+      TNotificacao.Sucesso(Self, 'OS excluída com sucesso.');
     except
       on E: Exception do TNotificacao.Erro(Self, E.Message);
     end;

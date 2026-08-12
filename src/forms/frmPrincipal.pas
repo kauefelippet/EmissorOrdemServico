@@ -149,7 +149,6 @@ end;
 
 procedure TPrincipal.btnSalvarConfigClick(Sender: TObject);
 begin
-  // Validacao simples antes de persistir
   if (Trim(edtDatabase.Text) <> '') and not FileExists(edtDatabase.Text) then
   begin
     TNotificacao.Aviso(Self, 'Arquivo de banco de dados não encontrado.');

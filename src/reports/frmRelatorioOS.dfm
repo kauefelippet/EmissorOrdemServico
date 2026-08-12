@@ -1454,7 +1454,7 @@ object RelatorioOS: TRelatorioOS
         Height = 13
         Alignment = taRightJustify
         AutoSize = False
-        DataField = 'VALOR_FRETE'
+        DataField = 'FRETE_SEM_SEGURO'
         DataSource = dtsOS
         Text = ''
       end
@@ -1601,7 +1601,7 @@ object RelatorioOS: TRelatorioOS
           Height = 25
           Alignment = taCenter
           AutoSize = False
-          DataField = 'TOTAL_GERAL'
+          DataField = 'VALOR_FRETE'
           DataSource = dtsOS
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clBlack
@@ -1730,37 +1730,48 @@ object RelatorioOS: TRelatorioOS
       '  CAST(EXTRACT(DAY   FROM OS.DATA) AS VARCHAR(2)) || '#39'/'#39' || '
       '  CAST(EXTRACT(MONTH FROM OS.DATA) AS VARCHAR(2)) || '#39'/'#39' || '
       '  CAST(EXTRACT(YEAR  FROM OS.DATA) AS VARCHAR(4)) AS DATA_FMT, '
+      '  '
       '  OS.VALOR_FRETE, '
       '  OS.SEGURO, '
+      '  (OS.VALOR_FRETE - OS.SEGURO) AS FRETE_SEM_SEGURO,'
+      '  '
       '  OS.BASE_ICMS, '
       '  OS.ALIQUOTA, '
       '  OS.VALOR_ICMS, '
       '  OS.PESO, '
       '  OS.QUANTIDADE, '
       '  OS.VALOR_MERCADORIA, '
-      '  CASE WHEN OS.KM > 0 THEN CAST(OS.KM AS VARCHAR(15)) || '#39' km'#39' '
-      '       ELSE '#39#8212#39' END AS KM_FMT, '
-      '  (OS.VALOR_FRETE + OS.SEGURO) AS TOTAL_GERAL, '
+      '  '
+      '  CASE '
+      '    WHEN OS.KM > 0 THEN CAST(OS.KM AS VARCHAR(15)) || '#39' km'#39' '
+      '    ELSE '#39#8212#39' '
+      '  END AS KM_FMT, '
+      '  '
       '  T.RAZAO_SOCIAL AS TOM_NOME, '
       '  T.DOCUMENTO    AS TOM_DOC, '
       '  T.CIDADE || '#39'/'#39' || T.UF AS TOM_LOCAL, '
+      '  '
       '  R.RAZAO_SOCIAL AS REM_NOME, '
       '  R.DOCUMENTO    AS REM_DOC, '
       '  R.LOGRADOURO || '#39', '#39' || R.NUMERO AS REM_END, '
-      '  R.CIDADE || '#39'/'#39' || R.UF         AS REM_LOCAL, '
+      '  R.CIDADE || '#39'/'#39' || R.UF AS REM_LOCAL, '
+      '  '
       '  D.RAZAO_SOCIAL AS DEST_NOME, '
       '  D.DOCUMENTO    AS DEST_DOC, '
       '  D.LOGRADOURO || '#39', '#39' || D.NUMERO AS DEST_END, '
-      '  D.CIDADE || '#39'/'#39' || D.UF         AS DEST_LOCAL, '
+      '  D.CIDADE || '#39'/'#39' || D.UF AS DEST_LOCAL, '
+      '  '
       '  F.PLACA, '
       '  F.DESCRICAO AS FROTA_DESC, '
       '  RT.DESCRICAO AS ROTA_DESC '
+      '  '
       'FROM ORDEM_SERVICO OS '
       'LEFT JOIN CLIENTES R  ON R.ID  = OS.ID_REMETENTE '
       'LEFT JOIN CLIENTES D  ON D.ID  = OS.ID_DESTINATARIO '
       'LEFT JOIN CLIENTES T  ON T.ID  = OS.ID_TOMADOR '
       'LEFT JOIN FROTA    F  ON F.ID  = OS.ID_FROTA '
       'LEFT JOIN ROTAS    RT ON RT.ID = OS.ID_ROTA '
+      ''
       'WHERE OS.ID = :pID')
     Left = 784
     Top = 32
@@ -1807,40 +1818,43 @@ object RelatorioOS: TRelatorioOS
     object qryOSVALOR_FRETE: TFMTBCDField
       FieldName = 'VALOR_FRETE'
       Origin = 'VALOR_FRETE'
-      DisplayFormat = '#,##0.00'
       Precision = 18
       Size = 2
     end
     object qryOSSEGURO: TFMTBCDField
       FieldName = 'SEGURO'
       Origin = 'SEGURO'
-      DisplayFormat = '#,##0.00'
+      Precision = 18
+      Size = 2
+    end
+    object qryOSFRETE_SEM_SEGURO: TFMTBCDField
+      AutoGenerateValue = arDefault
+      FieldName = 'FRETE_SEM_SEGURO'
+      Origin = 'FRETE_SEM_SEGURO'
+      ProviderFlags = []
+      ReadOnly = True
       Precision = 18
       Size = 2
     end
     object qryOSBASE_ICMS: TFMTBCDField
       FieldName = 'BASE_ICMS'
       Origin = 'BASE_ICMS'
-      DisplayFormat = '#,##0.00'
       Precision = 18
       Size = 2
     end
     object qryOSALIQUOTA: TCurrencyField
       FieldName = 'ALIQUOTA'
       Origin = 'ALIQUOTA'
-      DisplayFormat = '#,##0.00'
     end
     object qryOSVALOR_ICMS: TFMTBCDField
       FieldName = 'VALOR_ICMS'
       Origin = 'VALOR_ICMS'
-      DisplayFormat = '#,##0.00'
       Precision = 18
       Size = 2
     end
     object qryOSPESO: TFMTBCDField
       FieldName = 'PESO'
       Origin = 'PESO'
-      DisplayFormat = '#,##0.000'
       Precision = 18
       Size = 3
     end
@@ -1851,7 +1865,6 @@ object RelatorioOS: TRelatorioOS
     object qryOSVALOR_MERCADORIA: TFMTBCDField
       FieldName = 'VALOR_MERCADORIA'
       Origin = 'VALOR_MERCADORIA'
-      DisplayFormat = '#,##0.00'
       Precision = 18
       Size = 2
     end
@@ -1862,16 +1875,6 @@ object RelatorioOS: TRelatorioOS
       ProviderFlags = []
       ReadOnly = True
       Size = 18
-    end
-    object qryOSTOTAL_GERAL: TFMTBCDField
-      AutoGenerateValue = arDefault
-      FieldName = 'TOTAL_GERAL'
-      Origin = 'TOTAL_GERAL'
-      ProviderFlags = []
-      ReadOnly = True
-      DisplayFormat = '#,##0.00'
-      Precision = 18
-      Size = 2
     end
     object qryOSTOM_NOME: TWideStringField
       AutoGenerateValue = arDefault

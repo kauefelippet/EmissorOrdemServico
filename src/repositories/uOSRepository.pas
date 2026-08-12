@@ -194,7 +194,7 @@ begin
     SetNullableInt(qry, 'pFrota', AOS.IDFrota);
     SetNullableInt(qry, 'pRota',  AOS.IDRota);
 
-    qry.Open; // RETURNING precisa de Open, não ExecSQL
+    qry.Open;
     if not qry.IsEmpty then
     begin
       AOS.Numero := qry.FieldByName('NUMERO').AsInteger;
@@ -214,7 +214,7 @@ begin
   try
     qry.Connection := Conn;
     qry.SQL.Text   :=
-      'UPDATE ORDEM_SERVICO SET ' +
+'UPDATE ORDEM_SERVICO SET ' +
       '  DATA             = :pData,   STATUS    = :pStatus, ' +
       '  ID_REMETENTE     = :pRem,    ID_DESTINATARIO = :pDest, ' +
       '  ID_TOMADOR       = :pTom,    ID_FROTA  = :pFrota, ' +

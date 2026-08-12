@@ -96,6 +96,7 @@ type
                                   var CanSelect: Boolean);
     procedure edtCargaExit(Sender: TObject);
     procedure edtFreteChange(Sender: TObject);
+    procedure edtSeguroChange(Sender: TObject);
     procedure edtFreteExit(Sender: TObject);
     procedure btnRecalcularFreteClick(Sender: TObject);
 
@@ -108,6 +109,7 @@ type
     FNFes          : TList<TOSNFeModel>;
     FBaseICMSAutoPreenchida: Boolean;
     FFreteManual: Boolean; // True se o usuario editou o frete manualmente
+    FBaseFreteCalculado: Double; // Frete base calculado (sem seguro)
     // Listas paralelas dos ComboBoxes
     FIDsClientes   : TList<Integer>;
     FIDsFrota      : TList<Integer>;
@@ -150,6 +152,7 @@ begin
   FRotaAtual   := TRotaModel.Novo;
   FBaseICMSAutoPreenchida := True;
   FFreteManual := False;
+  FBaseFreteCalculado  := 0;
 
   // Tipo de tomador
   cboTipoTomador.Items.Clear;
@@ -207,6 +210,7 @@ begin
   edtValNF.OnExit  := edtCargaExit;
   edtKM.OnExit     := edtCargaExit;
   edtSeguro.OnExit := edtCargaExit;
+  edtSeguro.OnChange := edtSeguroChange; // atualiza frete ao mudar seguro
 
   // Preenchimento manual do valor do frete
   edtFrete.OnChange    := edtFreteChange;
@@ -230,6 +234,9 @@ begin
     dtpData.Date      := Date;
     AtualizarVisibilidadeCampos;
   end;
+
+  // Sempre começa na primeira aba
+  pgcEmissao.ActivePage := tsPasso1;
 end;
 
 procedure TEmissaoOS.FormDestroy(Sender: TObject);
@@ -434,6 +441,28 @@ begin
   RecalcularICMS;
 end;
 
+// ─── edtSeguroChange — atualiza frete total ao mudar seguro ────────────────────
+procedure TEmissaoOS.edtSeguroChange(Sender: TObject);
+var
+  Seguro, FreteTotal: Double;
+begin
+  // Se frete é manual, não sobrescreve
+  if FFreteManual then Exit;
+
+  Seguro := StrToFloatDef(
+    StringReplace(edtSeguro.Text, ',', '.', [rfReplaceAll]), 0);
+
+  FreteTotal := FBaseFreteCalculado + Seguro;
+  edtFrete.Text := FormatFloat('0.00', FreteTotal);
+
+  // Atualiza base ICMS se estava auto-preenchida
+  if FBaseICMSAutoPreenchida then
+  begin
+    edtBaseICMS.Text := FormatFloat('0.00', FreteTotal);
+    RecalcularICMS;
+  end;
+end;
+
 // ─── RecalcularFrete — usa Service com dados atuais da tela ──────────────────
 procedure TEmissaoOS.RecalcularFrete;
 var
@@ -447,6 +476,13 @@ begin
        StrToFloatDef(StringReplace(edtKM.Text,    ',', '.', [rfReplaceAll]), 0),
        FFreteManual, Frete) then
     Exit;
+
+  FBaseFreteCalculado := Frete; // guarda frete base (sem seguro)
+
+  // Aplica seguro se não for edição manual
+  if not FFreteManual then
+    Frete := Frete + StrToFloatDef(
+               StringReplace(edtSeguro.Text, ',', '.', [rfReplaceAll]), 0);
 
   edtFrete.Text := FormatFloat('0.00', Frete);
 
