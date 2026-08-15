@@ -354,7 +354,13 @@ end;
 
 // ─── PreencherCampos — OS → tela ─────────────────────────────────────────────
 procedure TEmissaoOS.PreencherCampos(const AOS: TOrdemServicoModel);
+var
+  Fmt: TFormatSettings;
 begin
+  Fmt := TFormatSettings.Create('pt-BR');
+  Fmt.DecimalSeparator := ',';
+  Fmt.ThousandSeparator := '.';
+
   lblNumOS.Caption := 'OS Nº ' + AOS.Numero.ToString.PadLeft(4, '0');
   dtpData.Date     := AOS.Data;
 
@@ -367,13 +373,13 @@ begin
   if FService.ExigeTomadorTerceiro(AOS.TipoTomador) then
     SelecionarCombo(cboTomador, FIDsClientes, AOS.IDTomador);
 
-  edtKM.Text      := IfThen(AOS.KM > 0, FormatFloat('0.00', AOS.KM), '');
+  edtKM.Text      := IfThen(AOS.KM > 0, FormatFloat('0.00', AOS.KM, Fmt), '');
   edtCFOP.Text    := AOS.CFOP;
-  edtSeguro.Text  := IfThen(AOS.Seguro > 0, FormatFloat('0.00', AOS.Seguro), '');
-  edtBaseICMS.Text:= IfThen(AOS.BaseICMS > 0, FormatFloat('0.00', AOS.BaseICMS), '');
-  edtAliquota.Text:= IfThen(AOS.Aliquota > 0, FormatFloat('0.00', AOS.Aliquota), '');
-  edtFrete.Text   := FormatFloat('R$ 0.00', AOS.ValorFrete);
-  edtValICMS.Text := FormatFloat('R$ 0.00', AOS.ValorICMS);
+  edtSeguro.Text  := IfThen(AOS.Seguro > 0, FormatFloat('0.00', AOS.Seguro, Fmt), '');
+  edtBaseICMS.Text:= IfThen(AOS.BaseICMS > 0, FormatFloat('0.00', AOS.BaseICMS, Fmt), '');
+  edtAliquota.Text:= IfThen(AOS.Aliquota > 0, FormatFloat('0.00', AOS.Aliquota, Fmt), '');
+  edtFrete.Text   := FormatFloat('0.00', AOS.ValorFrete, Fmt);
+  edtValICMS.Text := FormatFloat('R$ 0.00', AOS.ValorICMS, Fmt);
   memoObs.Text    := AOS.Observacoes;
 
   AtualizarGridNFe;
@@ -388,7 +394,12 @@ procedure TEmissaoOS.AtualizarGridNFe;
 var
   I  : Integer;
   NFe: TOSNFeModel;
+  Fmt: TFormatSettings;
 begin
+  Fmt := TFormatSettings.Create('pt-BR');
+  Fmt.DecimalSeparator := ',';
+  Fmt.ThousandSeparator := '.';
+
   gridNFe.RowCount := Max(2, FNFes.Count + 1);
 
   for I := 0 to FNFes.Count - 1 do
@@ -398,9 +409,9 @@ begin
     gridNFe.Cells[1, I+1] := NFe.Serie;
     gridNFe.Cells[2, I+1] := NFe.Emitente;
     gridNFe.Cells[3, I+1] := NFe.ChaveNFe;
-    gridNFe.Cells[4, I+1] := FormatFloat('0.000', NFe.Peso);
+    gridNFe.Cells[4, I+1] := FormatFloat('0.000', NFe.Peso, Fmt);
     gridNFe.Cells[5, I+1] := NFe.Quantidade.ToString;
-    gridNFe.Cells[6, I+1] := FormatFloat('0.00', NFe.ValorMercadoria);
+    gridNFe.Cells[6, I+1] := FormatFloat('0.00', NFe.ValorMercadoria, Fmt);
   end;
 end;
 
@@ -408,13 +419,18 @@ end;
 procedure TEmissaoOS.AtualizarTotaisNFe;
 var
   AOS: TOrdemServicoModel;
+  Fmt: TFormatSettings;
 begin
+  Fmt := TFormatSettings.Create('pt-BR');
+  Fmt.DecimalSeparator := ',';
+  Fmt.ThousandSeparator := '.';
+
   AOS := TOrdemServicoModel.Novo;
   FService.RecalcularTotaisNFe(AOS, FNFes);
 
-  edtPeso.Text  := FormatFloat('0.000', AOS.PesoTotal);
+  edtPeso.Text  := FormatFloat('0.000', AOS.PesoTotal, Fmt);
   edtQtd.Text   := AOS.QuantidadeTotal.ToString;
-  edtValNF.Text := FormatFloat('0.00', AOS.ValorMercadoria);
+  edtValNF.Text := FormatFloat('0.00', AOS.ValorMercadoria, Fmt);
 
   RecalcularFrete;
 end;
@@ -445,20 +461,24 @@ end;
 procedure TEmissaoOS.edtSeguroChange(Sender: TObject);
 var
   Seguro, FreteTotal: Double;
+  Fmt: TFormatSettings;
 begin
   // Se frete é manual, não sobrescreve
   if FFreteManual then Exit;
 
-  Seguro := StrToFloatDef(
-    StringReplace(edtSeguro.Text, ',', '.', [rfReplaceAll]), 0);
+  Fmt := TFormatSettings.Create('pt-BR');
+  Fmt.DecimalSeparator := ',';
+  Fmt.ThousandSeparator := '.';
+
+  Seguro := StrToFloatDef(edtSeguro.Text, 0, Fmt);
 
   FreteTotal := FBaseFreteCalculado + Seguro;
-  edtFrete.Text := FormatFloat('0.00', FreteTotal);
+  edtFrete.Text := FormatFloat('0.00', FreteTotal, Fmt);
 
   // Atualiza base ICMS se estava auto-preenchida
   if FBaseICMSAutoPreenchida then
   begin
-    edtBaseICMS.Text := FormatFloat('0.00', FreteTotal);
+    edtBaseICMS.Text := FormatFloat('0.00', FreteTotal, Fmt);
     RecalcularICMS;
   end;
 end;
@@ -467,13 +487,18 @@ end;
 procedure TEmissaoOS.RecalcularFrete;
 var
   Frete, Base: Double;
+  Fmt: TFormatSettings;
 begin
+  Fmt := TFormatSettings.Create('pt-BR');
+  Fmt.DecimalSeparator := ',';
+  Fmt.ThousandSeparator := '.';
+
   if not FService.CalcularFreteAutomatico(
        FRotaAtual,
-       StrToFloatDef(StringReplace(edtPeso.Text, ',', '.', [rfReplaceAll]), 0),
+       StrToFloatDef(edtPeso.Text, 0, Fmt),
        StrToIntDef(edtQtd.Text, 0),
-       StrToFloatDef(StringReplace(edtValNF.Text, ',', '.', [rfReplaceAll]), 0),
-       StrToFloatDef(StringReplace(edtKM.Text,    ',', '.', [rfReplaceAll]), 0),
+       StrToFloatDef(edtValNF.Text, 0, Fmt),
+       StrToFloatDef(edtKM.Text, 0, Fmt),
        FFreteManual, Frete) then
     Exit;
 
@@ -481,15 +506,14 @@ begin
 
   // Aplica seguro se não for edição manual
   if not FFreteManual then
-    Frete := Frete + StrToFloatDef(
-               StringReplace(edtSeguro.Text, ',', '.', [rfReplaceAll]), 0);
+    Frete := Frete + StrToFloatDef(edtSeguro.Text, 0, Fmt);
 
-  edtFrete.Text := FormatFloat('0.00', Frete);
+  edtFrete.Text := FormatFloat('0.00', Frete, Fmt);
 
   if FService.CalcularBaseICMSAutomatica(Frete,
        Trim(edtBaseICMS.Text) <> '', FBaseICMSAutoPreenchida, Base) then
   begin
-    edtBaseICMS.Text        := FormatFloat('0.00', Base);
+    edtBaseICMS.Text        := FormatFloat('0.00', Base, Fmt);
     FBaseICMSAutoPreenchida := True;
     RecalcularICMS;
   end;
@@ -499,14 +523,17 @@ end;
 procedure TEmissaoOS.RecalcularICMS;
 var
   Base, Aliq, ICMS: Double;
+  Fmt: TFormatSettings;
 begin
-  Base := StrToFloatDef(
-    StringReplace(edtBaseICMS.Text, ',', '.', [rfReplaceAll]), 0);
-  Aliq := StrToFloatDef(
-    StringReplace(edtAliquota.Text, ',', '.', [rfReplaceAll]), 0);
+  Fmt := TFormatSettings.Create('pt-BR');
+  Fmt.DecimalSeparator := ',';
+  Fmt.ThousandSeparator := '.';
+
+  Base := StrToFloatDef(edtBaseICMS.Text, 0, Fmt);
+  Aliq := StrToFloatDef(edtAliquota.Text, 0, Fmt);
 
   ICMS := FService.CalcularICMS(Base, Aliq);
-  edtValICMS.Text := FormatFloat('R$ 0.00', ICMS);
+  edtValICMS.Text := FormatFloat('R$ 0.00', ICMS, Fmt);
 end;
 
 // ─── Eventos de mudança de valor ─────────────────────────────────────────────
@@ -631,22 +658,25 @@ procedure TEmissaoOS.gridNFeSetEditText(Sender: TObject; ACol, ARow: Integer;
 var
   Idx: Integer;
   NFe: TOSNFeModel;
+  Fmt: TFormatSettings;
 begin
+  Fmt := TFormatSettings.Create('pt-BR');
+  Fmt.DecimalSeparator := ',';
+  Fmt.ThousandSeparator := '.';
+
   Idx := ARow - 1;
   if (Idx < 0) or (Idx >= FNFes.Count) then Exit;
 
   NFe := FNFes[Idx];
 
   case ACol of
-    0: NFe.NumeroNFe      := Value;
-    1: NFe.Serie          := Value;
-    2: NFe.Emitente       := Value;
-    3: NFe.ChaveNFe       := Value;
-    4: NFe.Peso           := StrToFloatDef(
-                               StringReplace(Value, ',', '.', [rfReplaceAll]), 0);
-    5: NFe.Quantidade     := StrToIntDef(Value, 0);
-    6: NFe.ValorMercadoria:= StrToFloatDef(
-                               StringReplace(Value, ',', '.', [rfReplaceAll]), 0);
+    0: NFe.NumeroNFe       := Value;
+    1: NFe.Serie           := Value;
+    2: NFe.Emitente        := Value;
+    3: NFe.ChaveNFe        := Value;
+    4: NFe.Peso            := StrToFloatDef(Value, 0, Fmt);
+    5: NFe.Quantidade      := StrToIntDef(Value, 0);
+    6: NFe.ValorMercadoria := StrToFloatDef(Value, 0, Fmt);
   end;
 
   FNFes[Idx] := NFe;
@@ -683,16 +713,21 @@ end;
 procedure TEmissaoOS.ImportarXMLNFe(const AArquivo: string);
 var
   Model: TOSNFeModel;
+  Fmt: TFormatSettings;
 begin
+  Fmt := TFormatSettings.Create('pt-BR');
+  Fmt.DecimalSeparator := ',';
+  Fmt.ThousandSeparator := '.';
+
   try
     Model := FService.ImportarNFeDeXML(AArquivo, OSID);
     FNFes.Add(Model);
 
     TNotificacao.Sucesso(Self,
       'NF-e ' + Model.NumeroNFe + ' importada: ' +
-      'Peso=' + FormatFloat('0.000', Model.Peso) + ' kg | ' +
+      'Peso=' + FormatFloat('0.000', Model.Peso, Fmt) + ' kg | ' +
       'Qtd=' + Model.Quantidade.ToString + ' | ' +
-      'Valor=R$ ' + FormatFloat('0.00', Model.ValorMercadoria));
+      'Valor=R$ ' + FormatFloat('0.00', Model.ValorMercadoria, Fmt));
 
     AtualizarGridNFe;
     AtualizarTotaisNFe;
@@ -706,7 +741,13 @@ begin
 end;
 
 function TEmissaoOS.ColetarCampos: TOrdemServicoModel;
+var
+  Fmt: TFormatSettings;
 begin
+  Fmt := TFormatSettings.Create('pt-BR');
+  Fmt.DecimalSeparator := ',';
+  Fmt.ThousandSeparator := '.';
+
   Result               := TOrdemServicoModel.Novo;
   Result.ID            := OSID;
   Result.Data          := dtpData.Date;
@@ -717,27 +758,18 @@ begin
   Result.IDRota        := IDDaCombo(cboRota,      FIDsRotas);
   Result.TipoTomador   := cboTipoTomador.ItemIndex;
   Result.CFOP          := Trim(edtCFOP.Text);
-  Result.KM            := StrToFloatDef(
-                           StringReplace(edtKM.Text, ',', '.', [rfReplaceAll]), 0);
-  Result.Seguro        := StrToFloatDef(
-                           StringReplace(edtSeguro.Text, ',', '.', [rfReplaceAll]), 0);
-  Result.BaseICMS      := StrToFloatDef(
-                           StringReplace(edtBaseICMS.Text, ',', '.', [rfReplaceAll]), 0);
-  Result.Aliquota      := StrToFloatDef(
-                           StringReplace(edtAliquota.Text, ',', '.', [rfReplaceAll]), 0);
-  Result.ValorICMS     := StrToFloatDef(
-                           StringReplace(edtValICMS.Text, 'R$ ', '', [rfReplaceAll])
-                           .Replace(',', '.'), 0);
-  Result.ValorFrete    := StrToFloatDef(
-                           StringReplace(edtFrete.Text, 'R$ ', '', [rfReplaceAll])
-                           .Replace(',', '.'), 0);
+  Result.KM            := StrToFloatDef(edtKM.Text, 0, Fmt);
+  Result.Seguro        := StrToFloatDef(edtSeguro.Text, 0, Fmt);
+  Result.BaseICMS      := StrToFloatDef(edtBaseICMS.Text, 0, Fmt);
+  Result.Aliquota      := StrToFloatDef(edtAliquota.Text, 0, Fmt);
+  Result.ValorICMS     := StrToFloatDef(StringReplace(edtValICMS.Text, 'R$ ', '', [rfReplaceAll]), 0, Fmt);
+  Result.ValorFrete    := StrToFloatDef(StringReplace(edtFrete.Text, 'R$ ', '', [rfReplaceAll]), 0, Fmt);
   Result.Observacoes   := memoObs.Text;
 
   // Totais das NF-es
-  Result.PesoTotal       := StrToFloatDef(edtPeso.Text, 0);
+  Result.PesoTotal       := StrToFloatDef(edtPeso.Text, 0, Fmt);
   Result.QuantidadeTotal := StrToIntDef(edtQtd.Text, 0);
-  Result.ValorMercadoria := StrToFloatDef(
-                             StringReplace(edtValNF.Text, ',', '.', [rfReplaceAll]), 0);
+  Result.ValorMercadoria := StrToFloatDef(edtValNF.Text, 0, Fmt);
 
   // Tomador: Remetente, Destinatário ou Terceiro
   Result.IDTomador := FService.ResolverTomador(
@@ -843,9 +875,18 @@ begin
 end;
 
 procedure TEmissaoOS.edtValorKeyPress(Sender: TObject; var Key: Char);
+var
+  Edit: TEdit;
 begin
-  if not (Key.IsDigit or (Key = ',') or (Key = '.') or (Key = #8)) then
+  if not (Key.IsDigit or (Key = ',') or (Key = #8)) then
     Key := #0;
+
+  if (Key = ',') then
+  begin
+    Edit := TEdit(Sender);
+    if Pos(',', Edit.Text) > 0 then
+      Key := #0;
+  end;
 end;
 
 end.

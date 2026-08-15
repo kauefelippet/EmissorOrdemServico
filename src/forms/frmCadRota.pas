@@ -164,7 +164,13 @@ begin
 end;
 
 procedure TCadRota.PreencherCampos(const ARota: TRotaModel);
+var
+  Fmt: TFormatSettings;
 begin
+  Fmt := TFormatSettings.Create('pt-BR');
+  Fmt.DecimalSeparator := ',';
+  Fmt.ThousandSeparator := '.';
+
   edtDescricao.Text := ARota.Descricao;
 
   case IndexStr(ARota.TipoCalculo,
@@ -178,12 +184,12 @@ begin
   end;
 
   if ARota.ValorBase > 0 then
-    edtValorBase.Text := FormatFloat('0.00', ARota.ValorBase)
+    edtValorBase.Text := FormatFloat('0.00', ARota.ValorBase, Fmt)
   else
     edtValorBase.Text := '';
 
   if ARota.Multiplicador > 0 then
-    edtMultiplicador.Text := FormatFloat('0.0000', ARota.Multiplicador)
+    edtMultiplicador.Text := FormatFloat('0.0000', ARota.Multiplicador, Fmt)
   else
     edtMultiplicador.Text := '';
 
@@ -192,18 +198,22 @@ begin
 end;
 
 function TCadRota.ColetarCampos: TRotaModel;
+var
+  Fmt: TFormatSettings;
 begin
+  Fmt := TFormatSettings.Create('pt-BR');
+  Fmt.DecimalSeparator := ',';
+  Fmt.ThousandSeparator := '.';
+
   Result              := TRotaModel.Novo;
   Result.ID           := RotaID;
   Result.Descricao    := Trim(edtDescricao.Text);
   Result.TipoCalculo  := TipoSelecionado;
 
-  Result.ValorBase := StrToFloatDef(
-    StringReplace(edtValorBase.Text, ',', '.', [rfReplaceAll]), 0);
+  Result.ValorBase := StrToFloatDef(edtValorBase.Text, 0, Fmt);
 
   if Result.UsaMultiplicador then
-    Result.Multiplicador := StrToFloatDef(
-      StringReplace(edtMultiplicador.Text, ',', '.', [rfReplaceAll]), 0)
+    Result.Multiplicador := StrToFloatDef(edtMultiplicador.Text, 0, Fmt)
   else
     Result.Multiplicador := 0;
 end;

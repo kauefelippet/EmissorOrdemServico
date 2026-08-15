@@ -137,7 +137,6 @@ begin
   FRepo.CarregarRotas(AQuery);
 end;
 
-// ─── Lookups tipados — o Form não precisa conhecer TFDQuery ──────────────────
 function TOSService.ListarClientesLookup: TList<TLookupItem>;
 var
   qry: TFDQuery;
@@ -210,7 +209,6 @@ begin
     Result := FRotaRepo.BuscarPorID(AID);
 end;
 
-// ─── Regras de preenchimento ──────────────────────────────────────────────────
 function TOSService.RotaExigeKM(const ARota: TRotaModel): Boolean;
 begin
   Result := ARota.TipoCalculo = TIPO_KM;
@@ -282,11 +280,9 @@ function TOSService.CalcularFreteAutomatico(const ARota: TRotaModel;
 begin
   AFrete := 0;
 
-  // Sem rota definida não há como calcular
   if ARota.ID = 0 then
     Exit(False);
 
-  // Se o usuário editou manualmente, o valor não é sobrescrito
   if AFreteManual then
     Exit(False);
 
@@ -454,8 +450,12 @@ var
   end;
 
   function ToFloat(const S: string): Double;
+  var Fmt: TFormatSettings;
   begin
-    Result := StrToFloatDef(S, 0, TFormatSettings.Invariant);
+    Fmt := TFormatSettings.Create('pt-BR');
+    Fmt.DecimalSeparator := '.';
+    Fmt.ThousandSeparator := #0;
+    Result := StrToFloatDef(S, 0, Fmt);
   end;
 
 begin
@@ -486,7 +486,23 @@ begin
 
   var total := BuscarNo(infNFe, 'total');
   if total <> nil then
-    Result.ValorMercadoria := ToFloat(NodeTxt(total, 'vNFTot'));
+  begin
+    var ICMSTot := BuscarNo(total, 'ICMSTot');
+    if ICMSTot <> nil then
+    begin
+      // Tenta vNF (valor total da NF-e), depois vProd (valor dos produtos)
+      var vNF := NodeTxt(ICMSTot, 'vNF');
+      var vProd := NodeTxt(ICMSTot, 'vProd');
+      if vNF <> '' then
+        Result.ValorMercadoria := ToFloat(vNF)
+      else if vProd <> '' then
+        Result.ValorMercadoria := ToFloat(vProd)
+      else
+        Result.ValorMercadoria := ToFloat(NodeTxt(total, 'vNFTot')); // fallback
+    end
+    else
+      Result.ValorMercadoria := ToFloat(NodeTxt(total, 'vNFTot')); // fallback
+  end;
 
   var transp := BuscarNo(infNFe, 'transp');
   var vol    := BuscarNo(transp,  'vol');
